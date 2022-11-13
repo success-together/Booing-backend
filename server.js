@@ -45,7 +45,7 @@ app.use(cookieParser());
 
 //Use Routes
 app.use(userRoutes)
-
+app.use()
 
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
