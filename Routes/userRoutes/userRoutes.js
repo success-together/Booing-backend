@@ -7,7 +7,7 @@ const userController = require('../../Controller/userController/userController')
 route.post('/booing/signup', userController.signup)
 // Singin route
 route.post('/booing/signin', userController.signin)
-route.get('/home', (req,res) => {
+route.get('/', (req,res) => {
     res.json({
         'hello': 'yo yo '
     })

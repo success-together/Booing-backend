@@ -44,7 +44,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 //Use Routes
-app.use(userRoutes)
+app.use("/.netlify/functions/home",userRoutes)
 
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
