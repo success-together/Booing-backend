@@ -21,6 +21,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 //Connect to atlas cluster database
+
 mongoose.connect(
     process.env.DB_CONNECTION,
     {
@@ -30,9 +31,9 @@ mongoose.connect(
     (err) => {
         console.log("Successufully connected to database .");
 
-        const PORT = 3001;
+        const PORT = process.env.PORT || 3002;
         app.listen(PORT, () => {
-            console.log("Server is active .");
+            console.log(`Server is active on port ${PORT} .`);
         });
     }
 )
