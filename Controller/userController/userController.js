@@ -15,9 +15,14 @@ const signup = async(req, res) => {
         console.log(name,email,phone,password)
         // check fields
         if (!name || !email || !phone || !password) {          
-            return res.status(400).json({ msg: "Fill in all the fields please ." });
+            return res.status(400).json({ msg: "Fill in all the fields please .", success: false });
         }
-
+        //Check if the email already exists
+        const findUser = await User.findOne({email})
+        if(findUser)
+        {
+            return res.status(400).json({ msg: "This email already exists .", success: false });
+        }
         //hash password 
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(password, salt);
