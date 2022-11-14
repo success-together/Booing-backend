@@ -13,7 +13,7 @@ const userSchema = new Schema({
     unique: true,
   },
   phone: {
-    type: Number,
+    type: String,
     required: true,
   },
   password: {
@@ -23,6 +23,7 @@ const userSchema = new Schema({
   },
   last_login: {
     type: Date,
+    default: null,
   },
   role: {
     type: String,

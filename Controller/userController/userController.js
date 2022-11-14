@@ -10,13 +10,11 @@ const signup = async(req, res) => {
         const { name,
             email,
             phone,
-            password,
-            last_login,
-            role,   
+            password,  
         } = req.body;
-
+        console.log(name,email,phone,password)
         // check fields
-        if (!name || !email || !phone || !password || !role) {
+        if (!name || !email || !phone || !password) {          
             return res.status(400).json({ msg: "Fill in all the fields please ." });
         }
 
@@ -24,7 +22,7 @@ const signup = async(req, res) => {
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(password, salt);
         // Create a new User
-        const user = new User({name: name, email: email, phone: phone , password: hashPassword, last_login: last_login, role: role})
+        const user = new User({name: name, email: email, phone: phone , password: hashPassword})
 
         // Save the New User into the Database
         await user.save().then(() => {
@@ -47,10 +45,10 @@ const signin = async(req,res) => {
         const {email, password} = req.body
         
         //Check if the email exists in the database
-        const user = await User.findOne({email})
+        let user = await User.findOne({email})
         if(!user) {
             return res.status(400).json({
-                 msg: "This email doesn't existe .", success: false });
+                 msg: "This email doesn't exist .", success: false });
         }
         // check password
       const passwordCheck = await bcrypt.compare(password, user.password);
@@ -60,6 +58,7 @@ const signin = async(req,res) => {
       }
       const signinToken= createToken.signinToken({id: user._id})
       console.log(signinToken)
+      user = await User.findOneAndUpdate({email},{last_login:Date.now()})
        // signing success
        return res.status(200).json({ msg: "User Singin does successuflly .", success: true, data: {user, signinToken } });
     }
