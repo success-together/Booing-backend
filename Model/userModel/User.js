@@ -34,6 +34,14 @@ const userSchema = new Schema({
   },
   updated_at: {
     type: Date,
+  },
+  code: {
+    type: Number,
+    default: 0,
+  },
+  accountVerified: {
+    type: Boolean,
+    default : false,
   }
 });
 
