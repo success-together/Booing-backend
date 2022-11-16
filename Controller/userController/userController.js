@@ -90,11 +90,10 @@ try{
     {
         return res.status(400).json({ msg: "Signup error. please, try to create your account again.", success: false });
     }
-    if(code === user.code)
-    {
+    
         user = await User.findOneAndUpdate({_id:user_id},{accountVerified:true, code:0 }, {new: true})
         return res.status(200).json({ msg: "Code matchs .", success: true, data: user });
-    }
+   
     return res.status(400).json({ msg: "Incorrect code", success: false });
 
 } catch(err) {
