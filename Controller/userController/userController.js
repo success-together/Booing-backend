@@ -5,22 +5,21 @@ const { sendEmailRegister, sendMail } = require("../../Helpers/nodeMailer/Mailer
 
 
 // User Signup
-const signup = async(req, res) => {
+const signup = async (req, res) => {
     try {
         // get info
         const { name,
             email,
             phone,
-            password,  
+            password,
         } = req.body;
         // check fields
-        if (!name || !email || !phone || !password) {          
+        if (!name || !email || !phone || !password) {
             return res.status(400).json({ msg: "Fill in all the fields please .", success: false });
         }
         //Check if the email already exists
-        const findUser = await User.findOne({email})
-        if(findUser)
-        {
+        const findUser = await User.findOne({ email })
+        if (findUser) {
             return res.status(400).json({ msg: "This email already exists .", success: false });
         }
         //hash password 
@@ -28,17 +27,17 @@ const signup = async(req, res) => {
         const hashPassword = await bcrypt.hash(password, salt);
         // Create a new User
         let code = Math.floor(Math.random() * 9000 + 1000);
-        const user = new User({name: name, email: email, phone: phone , password: hashPassword, code: code})
+        const user = new User({ name: name, email: email, phone: phone, password: hashPassword, code: code })
 
         // Save the New User into the Database
         await user.save().then(() => {
             //Return success message and the user
-              sendMail(email," Confirm your email adress. ", code)
-              return res.status(200).json({msg : "Code sent succussefuly, check your email .", success: true, data: user})
+            sendMail(email, " Confirm your email adress. ", code)
+            return res.status(200).json({ msg: "Code sent succussefuly, check your email .", success: true, data: user })
         })
-        
+
     }
-    catch(err) {
+    catch (err) {
         //Return errors
         res.status(500).json({ msg: err.message, success: false });
     }
@@ -46,75 +45,75 @@ const signup = async(req, res) => {
 }
 
 //User Signin
-const signin = async(req,res) => {
+const signin = async (req, res) => {
     try {
         //get info
-        const {email, password} = req.body
-        
+        const { email, password } = req.body
+
         //Check if the email exists in the database
-        let user = await User.findOne({email})
-        if(!user) {
+        let user = await User.findOne({ email })
+        if (!user) {
             return res.status(400).json({
-                 msg: "This email doesn't exist .", success: false });
+                msg: "This email doesn't exist .", success: false
+            });
         }
         // check password
-      const passwordCheck = await bcrypt.compare(password, user.password);
-      if (!passwordCheck)
-      {
-        return res.status(400).json({ msg: "Incorrect password", success: false });
-      }
-      if (user.accountVerified === false)
-      {
-        return res.status(400).json({ msg: "Account not verified", success: false });
-      }
-      const signinToken= createToken.signinToken({id: user._id})
-      console.log(signinToken)
-      user = await User.findOneAndUpdate({email},{last_login:Date.now()}).select("-password")
-       // signing success
-       return res.status(200).json({ msg: "User Singin does successuflly .", success: true, data: {user, signinToken } });
+        const passwordCheck = await bcrypt.compare(password, user.password);
+        if (!passwordCheck) {
+            return res.status(400).json({ msg: "Incorrect password", success: false });
+        }
+        if (user.accountVerified === false) {
+            return res.status(400).json({ msg: "Account not verified", success: false });
+        }
+        const signinToken = createToken.signinToken({ id: user._id })
+        console.log(signinToken)
+        user = await User.findOneAndUpdate({ email }, { last_login: Date.now() }).select("-password")
+        // signing success
+        return res.status(200).json({ msg: "User Singin does successuflly .", success: true, data: { user, signinToken } });
     }
-    catch(err){
-         //Return errors
-         res.status(500).json({ msg: err.message, success: false });
+    catch (err) {
+        //Return errors
+        res.status(500).json({ msg: err.message, success: false });
     }
 
 }
 
 // Code verification
-const codeVerification = async (req,res) =>{
-try{
-    const {user_id, code} = req.body
-    
-    let user = await User.findById(user_id)
-    if(!user)
-    {
-        return res.status(400).json({ msg: "Signup error. please, try to create your account again.", success: false });
-    }
-    if(code === user.code)
-    {
-        user = await User.findOneAndUpdate({_id:user_id},{accountVerified:true, code:0 }, {new: true}).select("-password")
-        return res.status(200).json({ msg: "Code matchs .", success: true, data: user });
-    }
-    return res.status(400).json({ msg: "Incorrect code", success: false });
+const codeVerification = async (req, res) => {
+    try {
+        const { user_id, code } = req.body
 
-} catch(err) {
-     //Return errors
-     res.status(500).json({ msg: err.message, success: false });
-}
+        let user = await User.findById(user_id)
+        if (!user) {
+            return res.status(400).json({ msg: "Signup error. please, try to create your account again.", success: false });
+        }
+        if (code === user.code) {
+            user = await User.findOneAndUpdate({ _id: user_id }, { accountVerified: true, code: 0 }, { new: true }).select("-password")
+            return res.status(200).json({ msg: "Code matchs .", success: true, data: user });
+        }
+        return res.status(400).json({ msg: "Incorrect code", success: false });
+
+    } catch (err) {
+        //Return errors
+        res.status(500).json({ msg: err.message, success: false });
+    }
 }
 
 // update user profile
 const updateProfile = async (req, res) => {
     try {
         // get new info
-        const { updates } = req.body
+        const { name, phone } = req.body
         //update
-        const user = await User.findByIdAndUpdate({ _id: req.user.id }, updates, {new: true}).select("-password")
-        //success
-        return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
-      } catch (err) {
+        if (name || phone) {
+            const user = await User.findByIdAndUpdate({ _id: req.user.id }, {name, phone}, { new: true }).select("-password")
+            //success
+            return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
+        }
+        return res.status(400).json({ msg: "No data found. failed to update profile.", success: false});
+    } catch (err) {
         return res.status(500).json({ msg: err.message, success: flase });
-      }
+    }
 }
 
 //Update user password
@@ -125,26 +124,26 @@ const updatePassword = async (req, res) => {
         //get User
         const user = await User.findById(req.user.id)
 
-        if(!user)
-        return res.status(400).json({msg: "User not found .", success: false })
+        if (!user)
+            return res.status(400).json({ msg: "User not found .", success: false })
 
         //check password
         const passwordCheck = await bcrypt.compare(currentPassword, user.password);
-        if(!passwordCheck)
-        return res.status(400).json({ msg:"Current password doesn't match.", success: false });
+        if (!passwordCheck)
+            return res.status(400).json({ msg: "Current password doesn't match.", success: false });
 
         // hash password
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(newPassword, salt);
-  
+
         // update password
         await User.findOneAndUpdate({ _id: req.user.id }, { password: hashPassword })
-  
+
         // update success
         return res.status(200).json({ msg: "password updated successfully", success: true });
-      } catch (err) {
+    } catch (err) {
         return res.status(500).json({ msg: err.message, success: false });
-      }
+    }
 }
 
-module.exports = {signup, signin, codeVerification, updateProfile, updatePassword}
+module.exports = { signup, signin, codeVerification, updateProfile, updatePassword }
