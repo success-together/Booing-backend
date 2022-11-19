@@ -69,7 +69,7 @@ const signin = async(req,res) => {
       }
       const signinToken= createToken.signinToken({id: user._id})
       console.log(signinToken)
-      user = await User.findOneAndUpdate({email},{last_login:Date.now()})
+      user = await User.findOneAndUpdate({email},{last_login:Date.now()}).select("-password")
        // signing success
        return res.status(200).json({ msg: "User Singin does successuflly .", success: true, data: {user, signinToken } });
     }
@@ -92,7 +92,7 @@ try{
     }
     if(code === user.code)
     {
-        user = await User.findOneAndUpdate({_id:user_id},{accountVerified:true, code:0 }, {new: true})
+        user = await User.findOneAndUpdate({_id:user_id},{accountVerified:true, code:0 }, {new: true}).select("-password")
         return res.status(200).json({ msg: "Code matchs .", success: true, data: user });
     }
     return res.status(400).json({ msg: "Incorrect code", success: false });
@@ -103,4 +103,48 @@ try{
 }
 }
 
-module.exports = {signup, signin, codeVerification}
+// update user profile
+const updateProfile = async (req, res) => {
+    try {
+        // get new info
+        const { updates } = req.body
+        //update
+        const user = await User.findByIdAndUpdate({ _id: req.user.id }, updates, {new: true}).select("-password")
+        //success
+        return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
+      } catch (err) {
+        return res.status(500).json({ msg: err.message, success: flase });
+      }
+}
+
+//Update user password
+const updatePassword = async (req, res) => {
+    try {
+        // get new password
+        const { currentPassword, newPassword } = req.body;
+        //get User
+        const user = await User.findById(req.user.id)
+
+        if(!user)
+        return res.status(400).json({msg: "User not found .", success: false })
+
+        //check password
+        const passwordCheck = await bcrypt.compare(currentPassword, user.password);
+        if(!passwordCheck)
+        return res.status(400).json({ msg:"Current password doesn't match.", success: false });
+
+        // hash password
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(newPassword, salt);
+  
+        // update password
+        await User.findOneAndUpdate({ _id: req.user.id }, { password: hashPassword })
+  
+        // update success
+        return res.status(200).json({ msg: "password updated successfully", success: true });
+      } catch (err) {
+        return res.status(500).json({ msg: err.message, success: false });
+      }
+}
+
+module.exports = {signup, signin, codeVerification, updateProfile, updatePassword}
