@@ -1,6 +1,6 @@
 const User = require("../../Model/userModel/User");
 const bcrypt = require("bcryptjs");
-const createToken = require("../../Helpers/createToken");
+const createToken = require("../../Helpers/createToken.js");
 const { sendEmailRegister, sendMail } = require("../../Helpers/nodeMailer/Mailer");
 
 
