@@ -14,6 +14,7 @@ const corsOptions = {
 //Get Routes
 const userRoutes = require("./Routes/userRoutes/userRoutes")
 const uploadFileRoutes = require("./Routes/uploadRoutes/uploadRoutes")
+const deviceRoutes = require('./Routes/deviceRoutes/DeviceRoutes');
 
 //Dotenv configuration
 const dotenv = require("dotenv");
@@ -45,6 +46,7 @@ app.use(cookieParser());
 //Use Routes
 app.use(userRoutes)
 app.use(uploadFileRoutes)
+app.use(deviceRoutes);
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json({ limit: "10mb", extended: true }));
