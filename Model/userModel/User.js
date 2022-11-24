@@ -1,4 +1,5 @@
-const { Schema, model } = require("mongoose")
+const { Schema, model } = require("mongoose");
+let mongoose = require('mongoose');
 
 const userSchema = new Schema({
   name: {
@@ -12,10 +13,11 @@ const userSchema = new Schema({
     trim: true,
     unique: true,
   },
-  phone: {
-    type: String,
-    required: true,
+  devices: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Device",
   },
+
   password: {
     type: String,
     required: true,
@@ -41,8 +43,8 @@ const userSchema = new Schema({
   },
   accountVerified: {
     type: Boolean,
-    default : false,
-  }
+    default: false,
+  },
 });
 
 const User = model("User", userSchema);
