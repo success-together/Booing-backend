@@ -13,14 +13,17 @@ route.post('/booing/signin', userController.signin)
 route.post('/booing/logged-in-user/updateProfile', Authentification, userController.updateProfile)
 // Update password
 route.post('/booing/logged-in-user/updatePassword', Authentification, userController.updatePassword)
+// Forgot password
+route.post('/booing/forgotPassword', userController.forgotPassword)
 
 i=0
 route.get('/', (req, res) => {
 
     res.setHeader('Content-Type', 'text/html');
     setInterval(() => {
-        res.write("A")
-    }, 100)
+        i++
+        res.write(i," s .. ")
+    }, 10000)
    
 })
 

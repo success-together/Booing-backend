@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 //step 1 mailer
-module.exports.sendMail = (to, subject, code) => {
+module.exports.sendMail = (to, subject, text, code) => {
 
   let transporter = nodemailer.createTransport({
     
@@ -19,7 +19,7 @@ module.exports.sendMail = (to, subject, code) => {
     from: 'bnyassine216@gmail.com', // TODO: email sender
     to: to, // TODO: email receiver
     subject: subject,
-    // text: 'From : '+ email  + ', Message : ' + text,
+    text: text,
     html: `<!DOCTYPE html>
     <html>
     <head>
@@ -189,7 +189,7 @@ module.exports.sendMail = (to, subject, code) => {
               <!-- start copy -->
               <tr>
                 <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                  <p style="margin: 0;">This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation. <br/> <br/> <b>Your Code :</b></p>
+                  <p style="margin: 0;"> ${text} <br/> <br/> <b>Your Code :</b></p>
                 </td>
               </tr>
               <!-- end copy -->

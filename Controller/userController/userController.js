@@ -32,7 +32,8 @@ const signup = async (req, res) => {
         // Save the New User into the Database
         await user.save().then(() => {
             //Return success message and the user
-            sendMail(email, " Confirm your email adress. ", code)
+            let text ="This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
+            sendMail(email, " Confirm your email adress. ", text, code)
             return res.status(200).json({ msg: "Code sent succussefuly, check your email .", success: true, data: user })
         })
 
@@ -81,15 +82,19 @@ const signin = async (req, res) => {
 // Code verification
 const codeVerification = async (req, res) => {
     try {
-        const { user_id, code } = req.body
+        const { user_id, code, isSignup } = req.body
 
         let user = await User.findById(user_id)
         if (!user) {
             return res.status(400).json({ msg: "Signup error. please, try to create your account again.", success: false });
         }
-        if (code === user.code) {
+        if (code === user.code && isSignup) {
             user = await User.findOneAndUpdate({ _id: user_id }, { accountVerified: true, code: 0 }, { new: true }).select("-password")
-            return res.status(200).json({ msg: "Code matchs .", success: true, data: user });
+            return res.status(200).json({ msg: "Signup code matchs .", success: true, data: user });
+        }
+        else if (code === user.code && !isSignup){
+            user = await User.findOneAndUpdate({ _id: user_id }, { code: 0 }, { new: true })
+            return res.status(200).json({ msg: "Reset code matchs .", success: true, data: user });
         }
         return res.status(400).json({ msg: "Incorrect code", success: false });
 
@@ -106,11 +111,11 @@ const updateProfile = async (req, res) => {
         const { name, phone } = req.body
         //update
         if (name || phone) {
-            const user = await User.findByIdAndUpdate({ _id: req.user.id }, {name, phone}, { new: true }).select("-password")
+            const user = await User.findByIdAndUpdate({ _id: req.user.id }, { name, phone }, { new: true }).select("-password")
             //success
             return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
         }
-        return res.status(400).json({ msg: "No data found. failed to update profile.", success: false});
+        return res.status(400).json({ msg: "No data found. failed to update profile.", success: false });
     } catch (err) {
         return res.status(500).json({ msg: err.message, success: flase });
     }
@@ -146,4 +151,28 @@ const updatePassword = async (req, res) => {
     }
 }
 
-module.exports = { signup, signin, codeVerification, updateProfile, updatePassword }
+const forgotPassword = async (req, res) => {
+    try {
+
+        // get email
+        const { email } = req.body;
+
+        // check email
+        let user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ msg: "This email doesn't exist.", success: false })
+        }
+        let code = Math.floor(Math.random() * 9000 + 1000);
+        //update user code
+        user = await User.findOneAndUpdate({email: email}, {code: code}, {new: true}).select("-password")
+        let text ="This is an email to confirm your request to reset your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your reset operation."
+        sendMail(email, " Reset Password. ", text, code)
+        return res.status(200).json({ msg: "Code sent succussefuly, check your email .", success: true, data: user })
+
+    }
+    catch (err) {
+        return res.status(500).json({ msg: err.message, success: false });
+    }
+}
+
+module.exports = { signup, signin, codeVerification, updateProfile, updatePassword, forgotPassword }

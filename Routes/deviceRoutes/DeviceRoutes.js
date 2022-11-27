@@ -5,7 +5,7 @@ const route = Router();
 
 route.post(
   "/booing/logged-in-user/addDevice",
-  Authentification,
+  // Authentification,
   deviceController.addDevice
 );
 
@@ -17,9 +17,15 @@ route.get(
 
 route.post(
   "/booing/logged-in-user/check-availability",
-  Authentification,
+
+  // Authentification,
   deviceController.checkAvailability
 );
 
+route.post(
+  "/booing/logged-in-user/updateGeoLocation",
+  //Authentification ,
+  deviceController.updateGeoLocation
+);
 
 module.exports = route;

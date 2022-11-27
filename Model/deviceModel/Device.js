@@ -8,20 +8,24 @@ const deviceSchema = new Schema({
   },
   created_at: {
     type: Date,
+    default: Date.now
   },
   updated_at: {
     type: Date,
+    default: null
   },
   type: {
     type: String,
   },
-  name:{
+  name: {
     type: String,
   },
   status: {
-    type : Number,
+    type: Number,
   },
-  geoLocation: {
+  lat: { type: Number },
+  lon: { type: Number },
+  device_ref: {
     type: String,
   },
 });
