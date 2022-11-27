@@ -17,6 +17,7 @@ route.get(
 
 route.post(
   "/booing/logged-in-user/check-availability",
+
   // Authentification,
   deviceController.checkAvailability
 );

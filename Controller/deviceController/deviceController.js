@@ -69,15 +69,18 @@ const getDevices = async (req, res) => {
 };
 
 const checkAvailability = async (req, res) => {
+
   const { device_ref } = req.body;
   try {
     let deviceSchema = await Device.findOne({ device_ref: device_ref });
+
     console.log(deviceSchema);
 
     if (deviceSchema) {
       if (deviceSchema.status < 4) {
         await Device.findOneAndUpdate(
           { _id: deviceSchema._id },
+
           { status: ++deviceSchema.status, updated_at: Date.now() }
         );
       }
@@ -95,6 +98,7 @@ const checkAvailability = async (req, res) => {
     res.status(400).json({ msg: err?.message, success: false });
   }
 };
+
 
 const updateGeoLocation = async (req, res) => {
   try {
@@ -125,3 +129,4 @@ module.exports = {
   checkAvailability,
   updateGeoLocation,
 };
+
