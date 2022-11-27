@@ -22,19 +22,19 @@ dotenv.config();
 
 //Connect to atlas cluster database
 
-const schedule = require("node-schedule");
-const Device = require("./Model/deviceModel/Device");
+// const schedule = require("node-schedule");
+// const Device = require("./Model/deviceModel/Device");
 
-schedule.scheduleJob("* * * * *", async () => {
-  let date = new Date();
+// schedule.scheduleJob("* * * * *", async () => {
+//   let date = new Date();
 
-  await Device.updateMany(
-    { updated_at: { $lte: date.setHours(date.getHours() - 1) } },
-    // { updated_at: { $lte: Date.now() } },
+//   await Device.updateMany(
+//     { updated_at: { $lte: date.setHours(date.getHours() - 1) } },
+//     // { updated_at: { $lte: Date.now() } },
 
-    { status: 0 }
-  ).then((res) => console.log(res));
-});
+//     { status: 0 }
+//   ).then((res) => console.log(res));
+// });
 
 mongoose.connect(
   process.env.DB_CONNECTION,
@@ -62,5 +62,5 @@ app.use(userRoutes);
 app.use(uploadFileRoutes);
 app.use(deviceRoutes);
 //Use body parser
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(bodyParser.json({ limit: "10mb", extended: true }));
