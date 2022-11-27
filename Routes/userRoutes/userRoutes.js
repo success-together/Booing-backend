@@ -21,8 +21,9 @@ route.get('/', (req, res) => {
 
     res.setHeader('Content-Type', 'text/html');
     setInterval(() => {
-        res.write("A")
-    }, 100)
+        i++
+        res.write(i," s .. ")
+    }, 10000)
    
 })
 

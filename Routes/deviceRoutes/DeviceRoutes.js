@@ -5,7 +5,7 @@ const route = Router();
 
 route.post(
   "/booing/logged-in-user/addDevice",
-  Authentification,
+  // Authentification,
   deviceController.addDevice
 );
 
