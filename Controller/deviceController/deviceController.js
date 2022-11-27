@@ -40,6 +40,7 @@ const addDevice = async (req, res) => {
 const getDevices = async (req, res) => {
   await Device.find()
     .then((devices) => {
+      console.log({ success: true, data: devices, msg: "sucess" });
       if (devices)
         return res
           .status(200)
@@ -54,4 +55,40 @@ const getDevices = async (req, res) => {
     );
 };
 
-module.exports = { addDevice, getDevices };
+const checkAvailability = async (req, res) => {
+  const device = req.body;
+  try {
+    let deviceSchema = await Device.findOne({ _id: device._id });
+    console.log(deviceSchema);
+
+    if (deviceSchema) {
+      if (deviceSchema.status < 4) {
+        await Device.findOneAndUpdate(
+          { _id: deviceSchema._id },
+          { status: ++deviceSchema.status, updated_at : Date.now() }
+        );
+      }
+      return res.status(200).json({
+        msg: "device status updated successfully",
+        data: deviceSchema,
+        success: true,
+      });
+    } else
+      return res
+        .status(400)
+        .json({ success: false, msg: "error when fetching device" });
+  } catch (err) {
+    //Return errors
+    res.status(400).json({ msg: err?.message, success: false });
+  }
+};
+
+const updateGeoLocation = async (req,res) => {
+  try {
+    
+  } catch (error) {
+    res.status(400).json({ msg: err?.message, success: false });
+  }
+}
+
+module.exports = { addDevice, getDevices, checkAvailability };
