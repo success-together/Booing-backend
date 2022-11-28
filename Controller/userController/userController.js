@@ -83,7 +83,6 @@ const signin = async (req, res) => {
 const codeVerification = async (req, res) => {
     try {
         const { user_id, code, isSignup } = req.body
-
         let user = await User.findById(user_id)
         if (!user) {
             return res.status(400).json({ msg: "Signup error. please, try to create your account again.", success: false });
