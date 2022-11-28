@@ -17,9 +17,15 @@ route.get(
 
 route.post(
   "/booing/logged-in-user/check-availability",
-  Authentification,
+
+  // Authentification,
   deviceController.checkAvailability
 );
 
+route.post(
+  "/booing/logged-in-user/updateGeoLocation",
+  //Authentification ,
+  deviceController.updateGeoLocation
+);
 
 module.exports = route;
