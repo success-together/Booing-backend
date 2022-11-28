@@ -10,9 +10,13 @@ route.post('/booing/signup/codeVerification', userController.codeVerification)
 // Singin route
 route.post('/booing/signin', userController.signin)
 // Update profile
-route.post('/booing/logged-in-user/updateProfile', Authentification, userController.updateProfile)
+route.post('/booing/logged-in-user/updateProfile',
+//  Authentification,
+  userController.updateProfile)
 // Update password
-route.post('/booing/logged-in-user/updatePassword', Authentification, userController.updatePassword)
+route.post('/booing/logged-in-user/updatePassword',
+//  Authentification,
+ userController.updatePassword)
 // Forgot password
 route.post('/booing/forgotPassword', userController.forgotPassword)
 

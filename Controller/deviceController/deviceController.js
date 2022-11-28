@@ -51,6 +51,7 @@ const addDevice = async (req, res) => {
 };
 
 const getDevices = async (req, res) => {
+  console.log(req.body.user_id)
   await Device.find({user_id : req.body.user_id})
     .then((devices) => {
       console.log({ success: true, data: devices, msg: "sucess" });
