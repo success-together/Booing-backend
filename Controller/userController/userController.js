@@ -107,10 +107,10 @@ const codeVerification = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         // get new info
-        const { name, phone } = req.body
+        const { name, phone,user_id } = req.body
         //update
         if (name || phone) {
-            const user = await User.findByIdAndUpdate({ _id: req.user.id }, { name, phone }, { new: true }).select("-password")
+            const user = await User.findByIdAndUpdate({ _id: user_id }, { name, phone }, { new: true }).select("-password")
             //success
             return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
         }
@@ -124,9 +124,9 @@ const updateProfile = async (req, res) => {
 const updatePassword = async (req, res) => {
     try {
         // get new password
-        const { currentPassword, newPassword } = req.body;
+        const { currentPassword, newPassword,user_id } = req.body;
         //get User
-        const user = await User.findById(req.user.id)
+        const user = await User.findById(user_id)
 
         if (!user)
             return res.status(400).json({ msg: "User not found .", success: false })
@@ -141,7 +141,7 @@ const updatePassword = async (req, res) => {
         const hashPassword = await bcrypt.hash(newPassword, salt);
 
         // update password
-        await User.findOneAndUpdate({ _id: req.user.id }, { password: hashPassword })
+        await User.findOneAndUpdate({ _id: user_id }, { password: hashPassword })
 
         // update success
         return res.status(200).json({ msg: "password updated successfully", success: true });
