@@ -19,11 +19,7 @@ route.post('/booing/forgotPassword', userController.forgotPassword)
 i=0
 route.get('/', (req, res) => {
 
-    res.setHeader('Content-Type', 'text/html');
-    setInterval(() => {
-        i++
-        res.write(i," s .. ")
-    }, 10000)
+   res.send("hello")
    
 })
 
