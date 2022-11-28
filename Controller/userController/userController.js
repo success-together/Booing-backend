@@ -108,10 +108,10 @@ const codeVerification = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         // get new info
-        const { name, phone } = req.body
+        const { name, phone,user_id } = req.body
         //update
         if (name || phone) {
-            const user = await User.findByIdAndUpdate({ _id: req.user.id }, { name, phone }, { new: true }).select("-password")
+            const user = await User.findByIdAndUpdate({ _id: user_id }, { name, phone }, { new: true }).select("-password")
             //success
             return res.status(200).json({ msg: "Profile updates does successfully.", success: true, data: user });
         }
