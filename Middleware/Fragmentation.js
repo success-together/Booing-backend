@@ -1,61 +1,53 @@
 const fs = require('fs')
-const { file } = require('googleapis/build/src/apis/file')
+const { file } = require('googleapis/build/src/apis/file');
+const { fields } = require('./UploadFile');
+const devices = require('../Controller/deviceController/deviceController');
+const Device = require('../Model/deviceModel/Device');
+const SendFragments = require('../Middleware/SendFragments')
+
 
 const fragmentation = async (req, res) => {
 
-    let noad = 40// number of available devices
+    // Get connected user
+    let user_id = req.params.user_id
+    
+    // Get available devices 
+    let availableDevices = await devices.getDevices()
+    console.log("availabledevices : ", availableDevices);
+    let noad = availableDevices?.length // Number of availble devices
 
-    let files = req.files // get files
+    // get files
+    let files = req.files 
     files.forEach((file, index) => {
-        console.log(file);
+        console.log(file)
+
+        // Convert file to bytes (base64)
         let encodedFile64 = fs.readFileSync(file.path, { encoding: 'base64' })
-        let base64File = encodedFile64
-        let lengthFile64 = encodedFile64.length
+        let lengthFile64 = encodedFile64.length //Number of bytes
         let sliceLength = Math.trunc(lengthFile64 / noad)
         let i = 0
+        let j = 0
         let fragment = ""
+        let fragmentPath= {}
         let fragments = []
-        console.log("lengthFile64 : ", lengthFile64)
-        console.log("sliceLength : ", sliceLength)
+        console.log("length of the file (base64) : ", lengthFile64)
+        console.log("Fragment length : ", sliceLength)
+        console.log("encodedFile64", encodedFile64);
+        //Divide the file over the number of available devices
         while (i < lengthFile64 - sliceLength) {
-            // j++
-            // console.log("lengthFile64 : ", lengthFile64);
-            console.log("i = ", i)
             fragment = encodedFile64.slice(i, i + sliceLength)
-            //   if(lengthFile64 - i <= sliceLength)
-            // //   {
-            // //     // console.log("Extra fragment : ", encodedFile64.slice(lengthFile64, lengthFile64))
-            // //     fragment = fragment + encodedFile64.slice(i, lengthFile64)
-            // //     // console.log("extra fragment["+j+"] : ", fragments)
-            // //   }
-            //   console.log("fragment : ", fragment)
-            fragments.push(fragment)
+            let device_id = availableDevices[j]._id;
+            fragmentPath = {fragmentID: j, fragment: fragment, fileName: file.filename, user_id: user_id, device: device_id}
+            fragments.push(fragmentPath)
             i = (i + sliceLength)
-
-            // console.log("part 1, length " + part1.length)
-            // console.log("part 2, length " + part2.length)
+            j++
 
         }
-        fragments[fragments.length - 1] = fragments[fragments.length - 1] + encodedFile64.slice(i, lengthFile64)
-        // fragments.push(encodedFile64.slice(i, lengthFile64))
+        //push the last fragment with the extra fragment if exists
+        fragments[fragments.length - 1].fragment = fragments[fragments.length - 1].fragment + encodedFile64.slice(i, lengthFile64)
         console.log("file " + index + " fragments : ", fragments.length)
         console.log("file " + index + " fragments : ", fragments)
-        // console.log("fragment N 763",fragments[763])
-        // console.log("fragment N 764",fragments[764])
-        // console.log("fragment N 765",fragments[765])
-        // console.log("fragment N 766",fragments[766])
-
-        //Download file
-
-        // let buffer = Buffer.from(base64File, "base64")
-        // let extension = file.mimetype.slice(file.mimetype.indexOf("/") + 1, file.mimetype.length)
-        // fs.writeFileSync(`./downloadedFiles/${Date.now()}_image.${extension}`, buffer, function (err) {
-        //     if (err)
-        //         console.log(err);
-        //     else
-        //         console.log("file created.");
-        // })
-
+       
     })
 
 
