@@ -32,10 +32,53 @@ const signup = async (req, res) => {
         // Save the New User into the Database
         await user.save().then(() => {
             //Return success message and the user
-            let text ="This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
+            let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
             sendMail(email, " Confirm your email adress. ", text, code)
             return res.status(200).json({ msg: "Code sent succussefuly, check your email .", success: true, data: user })
         })
+
+    }
+    catch (err) {
+        //Return errors
+        res.status(500).json({ msg: err.message, success: false });
+    }
+
+}
+
+// Social Media Signup
+const socialMediaSignup = async (req, res) => {
+    try {
+        // get info
+        const { name,
+            email,
+            socialMedia_ID,
+        } = req.body;
+        // check fields
+        if (!name || !email || !socialMedia_ID) {
+            return res.status(400).json({ msg: "Fill in all the fields please .", success: false });
+        }
+        // Initiate User information
+        const user = new User({ name: name, email: email, phone: "", socialMedia_ID: socialMedia_ID, password: "", code: "" })
+        //Check if the email already exists
+        const findUser = await User.findOne({ email })
+        if (!findUser) {
+            // return res.status(400).json({ msg: "This email already exists .", success: false });
+
+            //hash password 
+            // const salt = await bcrypt.genSalt();
+            // const hashPassword = await bcrypt.hash(password, salt);
+            // Create a new User
+            // let code = Math.floor(Math.random() * 9000 + 1000);
+
+            // Save the New User into the Database
+            await user.save().then(() => {
+                //Return success message and the user
+                // let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
+                // sendMail(email, " Confirm your email adress. ", text, code)
+                return res.status(200).json({ msg: "User Login does successfully.", success: true, data: user })
+            })
+        }
+        return res.status(200).json({ msg: "User already exist. Login does successfully.", success: true, data: user  })
 
     }
     catch (err) {
@@ -91,7 +134,7 @@ const codeVerification = async (req, res) => {
             user = await User.findOneAndUpdate({ _id: user_id }, { accountVerified: true, code: 0 }, { new: true }).select("-password")
             return res.status(200).json({ msg: "Signup code matchs .", success: true, data: user });
         }
-        else if (code === user.code && !isSignup){
+        else if (code === user.code && !isSignup) {
             user = await User.findOneAndUpdate({ _id: user_id }, { code: 0 }, { new: true })
             return res.status(200).json({ msg: "Reset code matchs .", success: true, data: user });
         }
@@ -107,7 +150,7 @@ const codeVerification = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         // get new info
-        const { name, phone,user_id } = req.body
+        const { name, phone, user_id } = req.body
         //update
         if (name || phone) {
             const user = await User.findByIdAndUpdate({ _id: user_id }, { name, phone }, { new: true }).select("-password")
@@ -124,7 +167,7 @@ const updateProfile = async (req, res) => {
 const updatePassword = async (req, res) => {
     try {
         // get new password
-        const { currentPassword, newPassword,user_id } = req.body;
+        const { currentPassword, newPassword, user_id } = req.body;
         //get User
         const user = await User.findById(user_id)
 
@@ -163,8 +206,8 @@ const forgotPassword = async (req, res) => {
         }
         let code = Math.floor(Math.random() * 9000 + 1000);
         //update user code
-        user = await User.findOneAndUpdate({email: email}, {code: code}, {new: true}).select("-password")
-        let text ="This is an email to confirm your request to reset your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your reset operation."
+        user = await User.findOneAndUpdate({ email: email }, { code: code }, { new: true }).select("-password")
+        let text = "This is an email to confirm your request to reset your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your reset operation."
         sendMail(email, " Reset Password. ", text, code)
         return res.status(200).json({ msg: "Code sent succussefuly, check your email .", success: true, data: user })
 
@@ -174,4 +217,4 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-module.exports = { signup, signin, codeVerification, updateProfile, updatePassword, forgotPassword }
+module.exports = { signup, socialMediaSignup, signin, codeVerification, updateProfile, updatePassword, forgotPassword }

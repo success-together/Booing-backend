@@ -5,6 +5,8 @@ const Authentification = require('../../Middleware/Authentification')
 
 // Signup route
 route.post('/booing/signup', userController.signup)
+// Social Media Signup route
+route.post('/booing/socialMediaSignup', userController.socialMediaSignup)
 //Code Verification
 route.post('/booing/signup/codeVerification', userController.codeVerification)
 // Singin route

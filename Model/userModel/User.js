@@ -13,6 +13,16 @@ const userSchema = new Schema({
     trim: true,
     unique: true,
   },
+
+  phone: {
+    type: String,
+    required: true
+  },
+
+  socialMedia_ID: {
+    type: String,
+  },
+
   devices: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Device",
