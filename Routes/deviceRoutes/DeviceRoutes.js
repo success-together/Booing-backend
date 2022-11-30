@@ -12,7 +12,7 @@ route.post(
 route.get(
   "/booing/logged-in-user/getDevices",
   // Authentification,
-  deviceController.getDevices
+  deviceController.getUserDevices
 );
 
 route.post(
