@@ -70,8 +70,9 @@ const getDevices = async (req, res) => {
 //Get User Registred Devices
 const getUserDevices = async (req, res) => {
   try {
+    const {user_id} = req.body
 
-    const devices = await Device.find()
+    const devices = await Device.find({user_id: user_id})
     if (devices) {
       console.log("devices : ", devices);
       return res.status(200).json({ success: true, data: devices, msg: "sucess" })
