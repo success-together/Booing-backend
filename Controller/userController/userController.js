@@ -58,7 +58,7 @@ const socialMediaSignup = async (req, res) => {
             return res.status(400).json({ msg: "Fill in all the fields please .", success: false });
         }
         // Initiate User information
-        const user = new User({ name: name, email: email, phone: "", socialMedia_ID: socialMedia_ID, password: "", code: "" })
+        const user = new User({ name: name, email: email, phone: "0", socialMedia_ID: socialMedia_ID, password: "0", code: 0 })
         //Check if the email already exists
         const findUser = await User.findOne({ email })
         if (!findUser) {
@@ -78,12 +78,13 @@ const socialMediaSignup = async (req, res) => {
                 return res.status(200).json({ msg: "User Login does successfully.", success: true, data: user })
             })
         }
-        return res.status(200).json({ msg: "User already exist. Login does successfully.", success: true, data: user  })
+        else
+        return res.status(200).json({ msg: "User already exist. Login does successfully.", success: true })
 
     }
     catch (err) {
         //Return errors
-        res.status(500).json({ msg: err.message, success: false });
+        return res.status(500).json({ msg: err.message, success: false });
     }
 
 }
