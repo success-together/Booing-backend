@@ -2,7 +2,7 @@ const Device = require("../../Model/deviceModel/Device");
 const User = require("../../Model/userModel/User");
 
 const addDevice = async (req, res) => {
-  const { device_ref, created_at, type, name, user_id, lat,lon } = req.body;
+  const { device_ref, created_at, type, name, user_id, lat, lon } = req.body;
   // ADD DEVICE TO DEVICE COLLECTION
   let dev = new Device({
     device_ref,
@@ -39,7 +39,7 @@ const addDevice = async (req, res) => {
                   .json({ success: false, msg: "failed to add device" });
             })
             .catch((err) =>
-              res.status(400).json({ success: false, msg: err?.message })
+             { res?.status(400).json({ success: false, msg: err?.message })}
             );
         } else
           res.status(400).json({ success: false, msg: "failed to add device" });
@@ -50,24 +50,55 @@ const addDevice = async (req, res) => {
   } else res.status(400).json({ sucess: false, msg: "Device already exists" });
 };
 
+//Get Available Devices
 const getDevices = async (req, res) => {
-  console.log(req.body.user_id)
-  await Device.find({user_id : req.body.user_id})
-    .then((devices) => {
-      console.log({ success: true, data: devices, msg: "sucess" });
-      if (devices)
-        return res
-          .status(200)
-          .json({ success: true, data: devices, msg: "sucess" });
-      else
-        return res
-          .status(400)
-          .json({ success: false, msg: "error while fetching devices" });
-    })
-    .catch((err) =>
-      res.status(400).json({ success: false, msg: err?.message })
-    );
-};
+  try {
+
+    const devices = await Device.find()
+    if (devices) {
+      return (devices)
+    }
+    return (0)
+  }
+  catch (err) {
+    //Return errors
+    return(err.message)
+  }
+}
+
+
+//Get User Registred Devices
+const getUserDevices = async (req, res) => {
+  try {
+
+    const devices = await Device.find()
+    if (devices) {
+      console.log("devices : ", devices);
+      return res.status(200).json({ success: true, data: devices, msg: "sucess" })
+    }
+    return res.status(400).json({ success: false, msg: "error while fetching devices" });
+  }
+  catch (err) {
+    //Return errors
+    res?.status(500).json({ success: false, msg: err.message })
+  }
+}
+// await Device.find()
+//   .then((devices) => {
+//     console.log({ success: true, data: devices, msg: "sucess" });
+//     if (devices)
+//       return res
+//         .status(200)
+//         .json({ success: true, data: devices, msg: "sucess" });
+//     else
+//       return res
+//         .status(400)
+//         .json({ success: false, msg: "error while fetching devices" });
+//   })
+//   .catch((err) =>
+//     res.status(400).json({ success: false, msg: err?.message })
+//   );
+
 
 const checkAvailability = async (req, res) => {
 
@@ -127,6 +158,7 @@ const updateGeoLocation = async (req, res) => {
 module.exports = {
   addDevice,
   getDevices,
+  getUserDevices,
   checkAvailability,
   updateGeoLocation,
 };

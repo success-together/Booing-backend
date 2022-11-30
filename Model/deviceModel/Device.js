@@ -28,6 +28,10 @@ const deviceSchema = new Schema({
   device_ref: {
     type: String,
   },
+  fragments: {
+    type : Array,
+    default : []
+  }
 });
 
 const Device = model("Device", deviceSchema);
