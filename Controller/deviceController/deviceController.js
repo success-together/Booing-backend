@@ -71,7 +71,9 @@ const getDevices = async (req, res) => {
 const getUserDevices = async (req, res) => {
   try {
     const {user_id} = req.body
-
+    
+    if(!user_id)
+    return res.status(400).json({ success: false, msg: "error while fetching devices" });
     const devices = await Device.find({user_id: user_id})
     if (devices) {
       console.log("devices : ", devices);
