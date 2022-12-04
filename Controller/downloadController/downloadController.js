@@ -1,5 +1,6 @@
 const { downloadFile } = require("../../Middleware/DownloadFile");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
+const fs = require('fs')
 
 
 //Download File
@@ -29,7 +30,8 @@ const download = async (req, res) => {
         
         if(result)
         {
-            return res.status(200).json({msg: "file downloaded successfully", success: true})
+            let uploadedFiles = fs.readdirSync('./downloadedFiles')
+            return res.status(200).json({msg: "file downloaded successfully", success: true, data: uploadedFiles})
         }
         return res.status(500).json({msg: result, success: false})
 
