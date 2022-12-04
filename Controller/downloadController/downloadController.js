@@ -10,21 +10,28 @@ const download = async (req, res) => {
             return res.status(400).json({ msg: "user not found", success: false })
         }
         const fragments = await Fragments.find({ user_id: user_id })
-        if (!fragments) return res.status(400).json({ msg: "no fragment found", success: false });
+        if (fragments.length == 0) return res.status(400).json({ msg: "no fragment found", success: false });
         let fileBase64 = ""
         let extension = ""
+        let result = false
+        let fileName =""
         fragments.forEach((item) => {
+            result = false
+            console.log("item file : ", item.updates[0].fileName)
+            fileBase64 = ""
             item.updates.forEach((update) => {
+                fileName = update.fileName.slice(0,update.fileName.lastIndexOf(".")-1)
                 extension = update.fileName.slice(update.fileName.lastIndexOf(".") + 1, update.fileName.length)
-                fileBase64 += update.fragment
+                fileBase64 = fileBase64 + update.fragment
             });
+             result = downloadFile(fileBase64, extension, fileName);
         })
-        const result = downloadFile(fileBase64, extension);
+        
         if(result)
         {
             return res.status(200).json({msg: "file downloaded successfully", success: true})
         }
-        return res.status(400).json({msg: result, success: false})
+        return res.status(500).json({msg: result, success: false})
 
 
     }
