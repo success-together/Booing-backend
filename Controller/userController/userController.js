@@ -75,11 +75,15 @@ const socialMediaSignup = async (req, res) => {
                 //Return success message and the user
                 // let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
                 // sendMail(email, " Confirm your email adress. ", text, code)
-                return res.status(200).json({ msg: "User Login does successfully.", success: true, data: user })
+                const signinToken = createToken.signinToken({ id: user._id })
+                return res.status(200).json({ msg: "User Login does successfully.", success: true, data:{ user, signinToken }})
             })
         }
-        else
-        return res.status(200).json({ msg: "User already exist. Login does successfully.", success: true })
+        else{
+            const signinToken = createToken.signinToken({ id: user._id })
+            return res.status(200).json({ msg: "User already exist. Login does successfully.", data:{user, signinToken}, success: true })
+        }
+        
 
     }
     catch (err) {
