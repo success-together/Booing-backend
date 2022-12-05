@@ -9,7 +9,7 @@ route.post(
   deviceController.addDevice
 );
 
-route.get(
+route.post(
   "/booing/logged-in-user/getDevices",
   // Authentification,
   deviceController.getUserDevices
