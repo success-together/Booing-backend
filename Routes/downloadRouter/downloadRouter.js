@@ -5,7 +5,9 @@ const {
 const route = Router();
 const downloadController = require("../../Controller/downloadController/downloadController");
 
-route.get("/booing/logged-in-user/downloadFile/:id", downloadController.download);
+
+route.get("/booing/logged-in-user/downloadFile/:user_id", downloadController.download);
+
 route.post("/booing/logged-in-user/checkForDownloads", checkForDownloads);
 route.post("/booing/logged-in-user/checkForUploads", checkForUploads);
 

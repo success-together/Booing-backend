@@ -11,16 +11,18 @@ const checkForDownloads = async (req, res) => {
     return res.satus(400).json({ msg: "no fragments found", success: false })
 
   let isDownloadedFragments = []
-  
-  fragments.forEach( fragment => {
-   isDownloadedFragments = fragment.updates.filter((item) => 
-    item.isDownloaded === false
-   )
+
+  fragments.forEach(fragment => {
+    let filtredFagment = fragment.updates.filter((item) =>
+      item.isDownloaded === false
+    );
+    isDownloadedFragments.push(...filtredFagment)
   });
- 
-  return res
-    .status(200)
-    .json({ msg: "success", success: true, data: isDownloadedFragments });
+
+  if (isDownloadedFragments.length == 0)
+    return res.status(400).json({ msg: "no fragments to download.", success: false });
+
+  return res.status(200).json({ msg: "success", success: true, data: isDownloadedFragments });
 };
 
 const checkForUploads = async (req, res) => {
@@ -38,11 +40,12 @@ const checkForUploads = async (req, res) => {
 
   fragments.forEach(fragment => {
     isUploadedFragments = fragment.updates.filter((item) =>
-    item.isUploaded === false)
+      item.isUploaded === false)
   })
-  return res
-    .status(200)
-    .json({ msg: "success", success: true, data: isUploadedFragments });
+  if (isUploadedFragments.length == 0)
+    return res.status(400).json({ msg: "no fragments to upload.", success: false });
+
+  return res.status(200).json({ msg: "success", success: true, data: isUploadedFragments });
 };
 
 module.exports = { checkForDownloads, checkForUploads };
