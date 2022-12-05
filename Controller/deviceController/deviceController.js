@@ -47,7 +47,7 @@ const addDevice = async (req, res) => {
       .catch((err) =>
         res.status(400).json({ success: false, msg: err?.message })
       );
-  } else res.status(400).json({ sucess: false, msg: "Device already exists" });
+  } else res.status(200).json({ sucess: false, msg: "Device already exists" });
 };
 
 //Get Available Devices
