@@ -80,8 +80,8 @@ const socialMediaSignup = async (req, res) => {
             })
         }
         else{
-            const signinToken = createToken.signinToken({ id: user._id })
-            return res.status(200).json({ msg: "User already exist. Login does successfully.", data:{user, signinToken}, success: true })
+            const signinToken = createToken.signinToken({ id: findUser._id })
+            return res.status(200).json({ msg: "User already exist. Login does successfully.", data:{findUser, signinToken}, success: true })
         }
         
 
