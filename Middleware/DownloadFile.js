@@ -3,8 +3,8 @@ const fs = require("fs");
 
 const downloadFile = async (fileBase64, extension, fileName) => {
   try {
-    let buffer = await Buffer.from(fileBase64, "base64");
-    await fs.writeFileSync(
+    let buffer = Buffer.from(fileBase64, "base64");
+    fs.writeFileSync(
       `./downloadedFiles/${fileName}.${extension}`,
       buffer
     );
