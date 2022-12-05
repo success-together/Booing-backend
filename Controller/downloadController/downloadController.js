@@ -6,7 +6,7 @@ const fs = require('fs')
 //Download File
 const download = async (req, res) => {
     try {
-        const { user_id } = req.body;
+        const user_id  = req.params.user_id;
         if (!user_id) {
             return res.status(400).json({ msg: "user not found", success: false })
         }
