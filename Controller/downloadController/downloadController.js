@@ -5,7 +5,7 @@ const Fragments = require("../../Model/fragmentsModel/Fragments");
 //Download File
 const download = async (req, res) => {
     try {
-        const { user_id } = req.body;
+        const { user_id } = req.params.id;
         if (!user_id) {
             return res.status(400).json({ msg: "user not found", success: false })
         }
