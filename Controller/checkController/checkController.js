@@ -13,9 +13,10 @@ const checkForDownloads = async (req, res) => {
   let isDownloadedFragments = []
 
   fragments.forEach(fragment => {
-    isDownloadedFragments = fragment.updates.filter((item) =>
+    let filtredFagment = fragment.updates.filter((item) =>
       item.isDownloaded === false
-    )
+    );
+    isDownloadedFragments.push(...filtredFagment)
   });
 
   if (isDownloadedFragments.length == 0)
