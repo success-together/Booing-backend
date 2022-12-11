@@ -1856,6 +1856,11 @@
   "resolved" "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz"
   "version" "1.2.0"
 
+"shrink-string@^3.1.2":
+  "integrity" "sha512-bw2ogC8b46rPgAVz7Wje8v/couCcNbuNFcdawQnLIAzZFcfZvkuE/8fR7nU4lkgaclhT6e86sRtETwDDjMwtYQ=="
+  "resolved" "https://registry.npmjs.org/shrink-string/-/shrink-string-3.1.2.tgz"
+  "version" "3.1.2"
+
 "side-channel@^1.0.4":
   "integrity" "sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw=="
   "resolved" "https://registry.npmjs.org/side-channel/-/side-channel-1.0.4.tgz"

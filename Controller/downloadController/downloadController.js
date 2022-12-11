@@ -1,11 +1,14 @@
 const { downloadFile } = require("../../Middleware/DownloadFile");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const fs = require("fs");
+const { type } = require("os");
 
 //Download File
 const download = async (req, res) => {
   try {
     const user_id = req.params.user_id;
+    const type = req.params.type;
+    console.log(type);
     if (!user_id) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
@@ -32,13 +35,16 @@ const download = async (req, res) => {
         );
         fileBase64 = fileBase64 + update.fragment;
       });
-      if (extension === "png" || extension === "jpg" || extension === "jpeg") {
-        let elementToPush = "data:image/" + extension + ";base64," + fileBase64;
+
+      // * checking if file type exists in fragmenet colluction to return only needed files ...
+      console.log(item.type);
+      if (item.type && item.type.includes(type)) {
+        let elementToPush = "data:" + item.type + ";base64," + fileBase64;
         base64.push(elementToPush);
       }
       //   result = downloadFile(fileBase64, extension, fileName);
     });
-
+    console.log(base64.length);
     // if (result) {
     //   let uploadedFiles = await fs.readdirSync("./downloadedFiles");
     return res.status(200).json({
