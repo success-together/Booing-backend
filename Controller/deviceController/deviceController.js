@@ -21,8 +21,6 @@ const addDevice = async (req, res) => {
       .save()
       .then((res) => {
         if (res) {
-          console.log("device added seccussfully to collection");
-
           // PUSH THE NEW DEVICE ID TO USER COLLECTION
           User.findOneAndUpdate(user_id, {
             $push: { devices: res._id },
@@ -32,7 +30,7 @@ const addDevice = async (req, res) => {
               if (savedUser)
                 return res
                   .status(200)
-                  .json({ success: true, msg: "device created successfully" });
+                  .json({ success: true, msg: "device created successfully", data: dev});
               else
                 return res
                   .status(400)
@@ -47,7 +45,7 @@ const addDevice = async (req, res) => {
       .catch((err) =>
         res.status(400).json({ success: false, msg: err?.message })
       );
-  } else res.status(200).json({ sucess: false, msg: "Device already exists" });
+  } else res.status(200).json({ sucess: false, msg: "Device already exists", data: isExistedDevice });
 };
 
 //Get Available Devices

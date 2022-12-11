@@ -15,6 +15,9 @@ const fragmentsSchema = new Schema({
   user_id: {
     type : mongoose.Schema.Types.ObjectId,
     ref : "User",
+  },
+  type: {
+    type: String,
   }
 });
 
