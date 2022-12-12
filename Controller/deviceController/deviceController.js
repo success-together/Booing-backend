@@ -19,26 +19,20 @@ const addDevice = async (req, res) => {
   if (!isExistedDevice) {
     await dev
       .save()
-      .then((res) => {
-        if (res) {
+      .then((Newdevice) => {
+        if (Newdevice) {
           // PUSH THE NEW DEVICE ID TO USER COLLECTION
-          User.findOneAndUpdate(user_id, {
-            $push: { devices: res._id },
+          User.findOneAndUpdate({_id : user_id}, {
+            $push: { devices: Newdevice._id },
           })
             .then((savedUser) => {
               console.log(savedUser);
               if (savedUser)
-                return res
-                  .status(200)
-                  .json({ success: true, msg: "device created successfully", data: dev});
+                return res.status(200).json({ success: true, msg: "device created successfully", data: dev });
               else
-                return res
-                  .status(400)
-                  .json({ success: false, msg: "failed to add device" });
+                return res.status(400).json({ success: false, msg: "failed to add device" });
             })
-            .catch((err) =>
-             { res?.status(400).json({ success: false, msg: err?.message })}
-            );
+            .catch((err) => { return res.status(400).json({ success: false, msg: err?.message }) });
         } else
           res.status(400).json({ success: false, msg: "failed to add device" });
       })
@@ -60,7 +54,7 @@ const getDevices = async (req, res) => {
   }
   catch (err) {
     //Return errors
-    return(err.message)
+    return (err.message)
   }
 }
 
@@ -68,11 +62,11 @@ const getDevices = async (req, res) => {
 //Get User Registred Devices
 const getUserDevices = async (req, res) => {
   try {
-    const {user_id} = req.body
-    
-    if(!user_id)
-    return res.status(400).json({ success: false, msg: "error while fetching devices" });
-    const devices = await Device.find({user_id: user_id})
+    const { user_id } = req.body
+
+    if (!user_id)
+      return res.status(400).json({ success: false, msg: "error while fetching devices" });
+    const devices = await Device.find({ user_id: user_id })
     if (devices) {
       console.log("devices : ", devices);
       return res.status(200).json({ success: true, data: devices, msg: "sucess" })
