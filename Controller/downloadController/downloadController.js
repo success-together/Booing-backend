@@ -1,7 +1,6 @@
 const { downloadFile } = require("../../Middleware/DownloadFile");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const fs = require("fs");
-const { type } = require("os");
 
 //Download File
 const download = async (req, res) => {
@@ -16,9 +15,9 @@ const download = async (req, res) => {
     if (fragments.length == 0)
       return res.status(400).json({ msg: "no fragment found", success: false });
     let fileBase64 = "";
-    let extension = "";
-    let result = false;
-    let fileName = "";
+    // let extension = "";
+    // let result = false;
+    // let fileName = "";
     let base64 = [];
     fragments.forEach((item) => {
       result = false;
