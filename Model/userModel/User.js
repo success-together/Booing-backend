@@ -24,8 +24,7 @@ const userSchema = new Schema({
   },
 
   devices: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Device",
+    type: Array,
   },
 
   password: {

@@ -1,15 +1,21 @@
 const { Router } = require("express");
 const {
-  checkForDownloads, checkForUploads,
-} = require("../../Controller/checkController/checkController");
+  checkForDownloads,
+  checkForUploads,
+  uploadFragments,
+  deleteFile,
+} = require("../../Controller/fragmentsController/fragmentsController");
 const route = Router();
 const downloadController = require("../../Controller/downloadController/downloadController");
 
-
-route.get("/booing/logged-in-user/downloadFile/:user_id/:type", downloadController.download);
+route.get(
+  "/booing/logged-in-user/downloadFile/:user_id/:type",
+  downloadController.download
+);
 
 route.post("/booing/logged-in-user/checkForDownloads", checkForDownloads);
 route.post("/booing/logged-in-user/checkForUploads", checkForUploads);
-
+route.post("/booing/logged-in-user/uploadFragments", uploadFragments);
+route.post("/booing/logged-in-user/deleteFile/:file_id", deleteFile);
 
 module.exports = route;
