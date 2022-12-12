@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-let mongoose = require('mongoose');
+let mongoose = require("mongoose");
 
 const fragmentsSchema = new Schema({
   created_at: {
@@ -13,12 +13,16 @@ const fragmentsSchema = new Schema({
     type: Array,
   },
   user_id: {
-    type : mongoose.Schema.Types.ObjectId,
-    ref : "User",
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   type: {
     type: String,
-  }
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Fragments = model("Fragments", fragmentsSchema);
