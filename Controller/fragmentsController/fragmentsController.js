@@ -6,9 +6,12 @@ const uploadFragments = async (req, res) => {
     const { file_id, fragment } = req.body;
     if (!file_id) return res.status(400).json({ msg: "no file_id received." });
     if (!fragment)
-      return res.status(400).json({ msg: "no fragments received." })
-    const fileFragments = await Fragments.updateOne({ _id: file_id, "updates.fragmentID": fragment.fragmentID },
-      { $set: { "updates.$.fragment": fragment.fragment } }, { new: true })
+      return res.status(400).json({ msg: "no fragments received." });
+    const fileFragments = await Fragments.updateOne(
+      { _id: file_id, "updates.fragmentID": fragment.fragmentID },
+      { $set: { "updates.$.fragment": fragment.fragment } },
+      { new: true }
+    );
     if (fileFragments?.modifiedCount == 1)
       return res.status(200).json({
         msg: "fragment uploaded successfully.",
@@ -25,63 +28,64 @@ const uploadFragments = async (req, res) => {
 };
 
 const checkForDownloads = async (req, res) => {
-  const { device_id } = req.body
+  const { device_id } = req.body;
 
   const fragments = await Fragments.find({
     "updates.isDownloaded": false,
   });
 
   if (!fragments)
-    return res.satus(400).json({ msg: "no fragments found.", success: false })
+    return res.satus(400).json({ msg: "no fragments found.", success: false });
 
-  let fragmentToDownload = []
+  let fragmentToDownload = [];
 
-  fragments.forEach(fragment => {
-
-    fragment.updates.forEach(update => {
+  fragments.forEach((fragment) => {
+    fragment.updates.forEach((update) => {
       if (update.isDownloaded === false)
-        update.devices.forEach(device => {
+        update.devices.forEach((device) => {
           if (device.device_id.toString() == device_id) {
-            let found = fragmentToDownload.some(frag => frag.fragment === update.fragment)
-            if (!found)
-              fragmentToDownload.push(update)
+            let found = fragmentToDownload.some(
+              (frag) => frag.fragment === update.fragment
+            );
+            if (!found) fragmentToDownload.push(update);
           }
-        })
-
-    })
-  })
+        });
+    });
+  });
 
   if (fragmentToDownload.length != 0)
-    return res.status(200).json({ msg: "success", success: true, data: fragmentToDownload });
+    return res
+      .status(200)
+      .json({ msg: "success", success: true, data: fragmentToDownload });
 
-  return res.status(400).json({ msg: "no fragments to download.", success: false });
+  return res
+    .status(400)
+    .json({ msg: "no fragments to download.", success: false });
 };
 
 const checkForUploads = async (req, res) => {
-
-  const { device_id } = req.body
+  const { device_id } = req.body;
 
   const fragments = await Fragments.find({
-    "updates.isUploaded": false
-  })
+    "updates.isUploaded": false,
+  });
 
   if (!fragments)
     return res.status(400).json({ msg: "nothing to upload.", success: false });
 
-  let fragmentToUpload = []
-  fragments.forEach(fragment => {
-
-    fragment.updates.forEach(update => {
-      update.devices.forEach(device => {
+  let fragmentToUpload = [];
+  fragments.forEach((fragment) => {
+    fragment.updates.forEach((update) => {
+      update.devices.forEach((device) => {
         if (device.device_id.toString() == device_id) {
-          let found = fragmentToUpload.some(frag => frag._id === fragment._id)
-          if (!found)
-            fragmentToUpload.push(fragment)
+          let found = fragmentToUpload.some(
+            (frag) => frag._id === fragment._id
+          );
+          if (!found) fragmentToUpload.push(fragment);
         }
-      })
-
-    })
-  })
+      });
+    });
+  });
   if (fragmentToUpload.length != 0)
     return res
       .status(200)
@@ -90,21 +94,45 @@ const checkForUploads = async (req, res) => {
   return res.status(400).json({ msg: "Error.", success: false });
 };
 
-const deleteFile = async (req, res) => {
-  console.log(req.body);
-  const file_id = req.params.file_id
-  await Fragments.findOneAndUpdate(
-    { _id: file_id },
-    { $set: { "updates.$[].fragment": "" }, isDeleted: true }
-  )
-    .then(() => {
-      return res
-        .status(200)
-        .json({ msg: "File deleted successfully", success: true });
+const deleteFiles = async (req, res) => {
+  const { files_id } = req.body;
+  files_id?.forEach(async (file_id) => {
+    await Fragments.findOneAndUpdate(
+      { _id: file_id },
+      // ! delete fragment only after duration
+      // { $set: { "updates.$[].fragment": "",
+      { isDeleted: true }
+    ).catch((err) => {
+      return res.status(400).json({ msg: err?.message, success: false });
+    });
+  });
+  return res
+    .status(200)
+    .json({ msg: "File deleted successfully", success: true });
+};
+
+const getDeletedFiles = async (req, res) => {
+  const { user_id } = req.params;
+  await Fragments.find({ isDeleted: true, user_id: user_id })
+    .then((files) => {
+      if (files)
+        return res
+          .status(200)
+          .json({ success: true, msg: "success", data: files });
+      else
+        return res
+          .status(200)
+          .json({ success: true, msg: "no files in the trash" });
     })
     .catch((err) => {
-      return res.status(400).json({ msg: err?.message, success: false });
+      return res.status(400).json({ success: false, msg: err?.message });
     });
 };
 
-module.exports = { checkForDownloads, checkForUploads, uploadFragments ,deleteFile};
+module.exports = {
+  checkForDownloads,
+  checkForUploads,
+  uploadFragments,
+  deleteFiles,
+  getDeletedFiles,
+};
