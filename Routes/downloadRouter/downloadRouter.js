@@ -18,7 +18,7 @@ route.get(
 route.post("/booing/logged-in-user/checkForDownloads", checkForDownloads);
 route.post("/booing/logged-in-user/checkForUploads", checkForUploads);
 route.post("/booing/logged-in-user/uploadFragments", uploadFragments);
-route.post("/booing/logged-in-user/deleteFiles/", deleteFiles);
+route.post("/booing/logged-in-user/deleteFiles", deleteFiles);
 // ! to test
 route.get('/booing/logged-in-user/getDeletedFiles/:user_id', getDeletedFiles);
 
