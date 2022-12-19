@@ -39,9 +39,10 @@ const download = async (req, res) => {
       console.log(item.type);
       if (item.type && item.type.includes(type)) {
         let elementToPush = "data:" + item.type + ";base64," + fileBase64;
-        base64.push(elementToPush);
+        base64.push({ file : elementToPush, id: item._id });
       }
       //   result = downloadFile(fileBase64, extension, fileName);
+      // console.log({ ...base64.length, id: item._id });
     });
     console.log(base64.length);
     // if (result) {
