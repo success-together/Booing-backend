@@ -2,6 +2,7 @@
 
 const upload = async (req, res, next) => {
     try {
+        console.log(files)
         if (req.files) {
             next()
             return res.status(200).json({ msg: "File uploaded successfully .", success: true })
