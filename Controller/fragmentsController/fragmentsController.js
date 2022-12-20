@@ -130,13 +130,52 @@ const deleteFiles = async (req, res) => {
 const getDeletedFiles = async (req, res) => {
   try {
     const { user_id } = req.params;
+    if (!user_id) {
+      return res.status(400).json({ msg: "user not found", success: false });
+    }
     await Fragments.find({ isDeleted: true, user_id: user_id })
-      .then((files) => {
-        if (files)
-          return res
-            .status(200)
-            .json({ success: true, msg: "success", data: files });
-        else
+      .then((fragments) => {
+        if (fragments) {
+          let fileBase64 = "";
+          let extension = "";
+          // let result = false;
+          let fileName = "";
+          let base64 = [];
+
+          fragments.forEach((item) => {
+            // result = false;
+            //   console.log("item file : ", item.updates[0].fileName);
+            fileBase64 = "";
+            item.updates.forEach((update) => {
+              fileName = update.fileName.slice(
+                0,
+                update.fileName.lastIndexOf(".") - 1
+              );
+              extension = update.fileName.slice(
+                update.fileName.lastIndexOf(".") + 1,
+                update.fileName.length
+              );
+              fileBase64 = fileBase64 + update.fragment;
+            });
+
+            let elementToPush = "data:" + item.type + ";base64," + fileBase64;
+            base64.push({
+              file: elementToPush,
+              id: item._id,
+              name: fileName + "." + extension,
+            });
+
+            //   result = downloadFile(fileBase64, extension, fileName);
+            // console.log({ ...base64.length, id: item._id });
+          });
+          // if (result) {
+          //   let uploadedFiles = await fs.readdirSync("./downloadedFiles");
+          return res.status(200).json({
+            msg: "file downloaded successfully",
+            success: true,
+            data: base64,
+          });
+        } else
           return res
             .status(200)
             .json({ success: true, msg: "no files in the trash" });
