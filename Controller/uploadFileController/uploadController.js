@@ -10,7 +10,7 @@ const upload = async (req, res, next) => {
         return res.status(400).json({ msg: "Upload failed.", success: false })
     }
     catch (err) {
-        return res.status(500).json({ msg: err.message, success: false })
+        return res.status(500).json({ msg: err?.message, success: false })
     }
 }
 

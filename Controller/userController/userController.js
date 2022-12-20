@@ -199,7 +199,7 @@ const codeVerification = async (req, res) => {
     return res.status(400).json({ msg: "Incorrect code", success: false });
   } catch (err) {
     //Return errors
-    res.status(500).json({ msg: err.message, success: false });
+    res.status(500).json({ msg: err?.message, success: false });
   }
 };
 
@@ -231,7 +231,7 @@ const updateProfile = async (req, res) => {
         success: false,
       });
   } catch (err) {
-    return res.status(500).json({ msg: err.message, success: flase });
+    return res.status(500).json({ msg: err?.message, success: flase });
   }
 };
 
