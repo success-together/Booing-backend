@@ -160,7 +160,7 @@ const getDeletedFiles = async (req, res) => {
 
             let elementToPush = "data:" + item.type + ";base64," + fileBase64;
             base64.push({
-              file: elementToPush,
+              uri: elementToPush,
               id: item._id,
               name: fileName + "." + extension,
             });
