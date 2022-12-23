@@ -9,16 +9,15 @@ const SendFragments = async (newFrags, user_id, type) => {
         user_id: user_id,
         type: type,
       });
-      await Frags.save().then(() => {
-        // console.log("frags", Frags);
-        console.log("Fragments ready to send");
-        console.log("Sending fragments to the devices...");
-      });
+      const { _id } = await Frags.save();
+      console.log("Fragments ready to send");
+      console.log("Sending fragments to the devices...");
       console.log("fragments sent successfully.");
+      return _id;
     }
     return "failed to send fragments, no fragments received!";
   } catch (err) {
-    return err.message;
+    return null;
   }
 };
 
