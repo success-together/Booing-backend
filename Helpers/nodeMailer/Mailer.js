@@ -138,7 +138,7 @@ module.exports.sendMail = (to, subject, text, code) => {
               <tr>
                 <td align="center" valign="top" style="padding: 36px 24px; background-color:#1a82e2;">
                   <a href="" target="_blank" style="display: inline-block;">
-                    <img src="https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.15752-9/314930245_816822379619606_7192765315205490518_n.png?_nc_cat=106&ccb=1-7&_nc_sid=ae9488&_nc_ohc=13atkqJakMkAX8bLAfm&_nc_ht=scontent.fnbe1-2.fna&oh=03_AdRaSCciCHd8vKfAwDwQgeoOYGzFqOnBO_K9u5VEJn9C1g&oe=639C6D49" alt="Logo" border="0" width="100" style="display: block; width: 100px; max-width: 100px; min-width: 48px;">
+                    <img src="https://scontent.ftun15-1.fna.fbcdn.net/v/t1.15752-9/314930245_816822379619606_7192765315205490518_n.png?_nc_cat=106&ccb=1-7&_nc_sid=ae9488&_nc_ohc=HThzIW1yY9MAX9RZhzj&_nc_ht=scontent.ftun15-1.fna&oh=03_AdQGmuRQ05N_GdAMnd2r7B6vy6UeQ-QU_Rs7UYfR2KS3dg&oe=63CFD7C9" alt="Logo" border="0" width="100" style="display: block; width: 100px; max-width: 100px; min-width: 48px;">
                   </a>
                 </td>
               </tr>
@@ -255,7 +255,7 @@ module.exports.sendMail = (to, subject, text, code) => {
               <!-- start permission -->
               <tr>
                 <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                  <p style="margin: 0;">You received this email because we received a request for [type_of_action] for your account. If you didn't request [type_of_action] you can safely delete this email.</p>
+                  <p style="margin: 0;">You received this email because we received a request for ${subject} for your account. If you didn't request ${subject} you can safely delete this email.</p>
                 </td>
               </tr>
               <!-- end permission -->
@@ -263,8 +263,8 @@ module.exports.sendMail = (to, subject, text, code) => {
               <!-- start unsubscribe -->
               <tr>
                 <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                  <p style="margin: 0;">To stop receiving these emails, you can <a href="https://www.blogdesire.com" target="_blank">unsubscribe</a> at any time.</p>
-                  <p style="margin: 0;">Paste 1234 S. Broadway St. City, State 12345</p>
+                  <p style="margin: 0;">To stop receiving these emails, you can <a href="https://www.booing.com" target="_blank">unsubscribe</a> at any time.</p>
+                  <p style="margin: 0;"></p>
                 </td>
               </tr>
               <!-- end unsubscribe -->
