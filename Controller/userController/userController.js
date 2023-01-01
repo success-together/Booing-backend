@@ -43,13 +43,11 @@ const signup = async (req, res) => {
       let text =
         "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
       sendMail(email, " Confirm your email adress. ", text, code);
-      return res
-        .status(200)
-        .json({
-          msg: "Code sent succussefuly, check your email .",
-          success: true,
-          data: user,
-        });
+      return res.status(200).json({
+        msg: "Code sent succussefuly, check your email .",
+        success: true,
+        data: user,
+      });
     });
   } catch (err) {
     //Return errors
@@ -94,23 +92,19 @@ const socialMediaSignup = async (req, res) => {
         // let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
         // sendMail(email, " Confirm your email adress. ", text, code)
         const signinToken = createToken.signinToken({ id: user._id });
-        return res
-          .status(200)
-          .json({
-            msg: "User Login does successfully.",
-            success: true,
-            data: { user, signinToken },
-          });
+        return res.status(200).json({
+          msg: "User Login does successfully.",
+          success: true,
+          data: { user, signinToken },
+        });
       });
     } else {
       const signinToken = createToken.signinToken({ id: findUser._id });
-      return res
-        .status(200)
-        .json({
-          msg: "User already exist. Login does successfully.",
-          data: { user: findUser, signinToken },
-          success: true,
-        });
+      return res.status(200).json({
+        msg: "User already exist. Login does successfully.",
+        data: { user: findUser, signinToken },
+        success: true,
+      });
     }
   } catch (err) {
     //Return errors
@@ -151,13 +145,11 @@ const signin = async (req, res) => {
       { last_login: Date.now() }
     ).select("-password");
     // signing success
-    return res
-      .status(200)
-      .json({
-        msg: "User Singin does successuflly .",
-        success: true,
-        data: { user, signinToken },
-      });
+    return res.status(200).json({
+      msg: "User Singin does successuflly .",
+      success: true,
+      data: { user, signinToken },
+    });
   } catch (err) {
     //Return errors
     res.status(500).json({ msg: err.message, success: false });
@@ -170,12 +162,10 @@ const codeVerification = async (req, res) => {
     const { user_id, code, isSignup } = req.body;
     let user = await User.findById(user_id);
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          msg: "Signup error. please, try to create your account again.",
-          success: false,
-        });
+      return res.status(400).json({
+        msg: "Signup error. please, try to create your account again.",
+        success: false,
+      });
     }
     if (code === user.code && isSignup) {
       user = await User.findOneAndUpdate(
@@ -216,20 +206,16 @@ const updateProfile = async (req, res) => {
         { new: true }
       ).select("-password");
       //success
-      return res
-        .status(200)
-        .json({
-          msg: "Profile updates does successfully.",
-          success: true,
-          data: user,
-        });
-    }
-    return res
-      .status(400)
-      .json({
-        msg: "No data found. failed to update profile.",
-        success: false,
+      return res.status(200).json({
+        msg: "Profile updates does successfully.",
+        success: true,
+        data: user,
       });
+    }
+    return res.status(400).json({
+      msg: "No data found. failed to update profile.",
+      success: false,
+    });
   } catch (err) {
     return res.status(500).json({ msg: err?.message, success: flase });
   }
@@ -297,13 +283,11 @@ const forgotPassword = async (req, res) => {
     let text =
       "This is an email to confirm your request to reset your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your reset operation.";
     sendMail(email, " Reset Password. ", text, code);
-    return res
-      .status(200)
-      .json({
-        msg: "Code sent succussefuly, check your email .",
-        success: true,
-        data: user,
-      });
+    return res.status(200).json({
+      msg: "Code sent succussefuly, check your email .",
+      success: true,
+      data: user,
+    });
   } catch (err) {
     return res.status(500).json({ msg: err.message, success: false });
   }

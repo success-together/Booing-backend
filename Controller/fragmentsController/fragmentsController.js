@@ -188,10 +188,48 @@ const getDeletedFiles = async (req, res) => {
   }
 };
 
+// get files not inside a directory
+const getMyFiles = async (req, res, next) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(401).json({
+      status: "fail",
+      message: "you must be logged in !",
+    });
+  }
+
+  try {
+    const data = (
+      await Fragments.find({
+        isDeleted: false,
+        directory: null,
+        user_id,
+      })
+    ).map((file) => ({
+      id: file._id,
+      name: file.updates[0].fileName,
+      isDirectory: file.isDirectory,
+    }));
+
+    res.status(200).json({
+      status: "success",
+      data,
+    });
+  } catch (e) {
+    console.log({ error: e });
+    res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+};
+
 module.exports = {
   checkForDownloads,
   checkForUploads,
   uploadFragments,
   deleteFiles,
   getDeletedFiles,
+  getMyFiles,
 };

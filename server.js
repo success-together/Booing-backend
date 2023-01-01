@@ -15,7 +15,9 @@ const corsOptions = {
 const userRoutes = require("./Routes/userRoutes/userRoutes");
 const uploadFileRoutes = require("./Routes/uploadRoutes/uploadRoutes");
 const deviceRoutes = require("./Routes/deviceRoutes/DeviceRoutes");
-const downloadRoutes = require('./Routes/downloadRouter/downloadRouter')
+const downloadRoutes = require("./Routes/downloadRouter/downloadRouter");
+const directoriesRoutes = require("./Routes/directoriesRoutes/directoriesRoutes");
+
 //Dotenv configuration
 const dotenv = require("dotenv");
 dotenv.config();
@@ -61,7 +63,9 @@ app.use(cookieParser());
 app.use(userRoutes);
 app.use(uploadFileRoutes);
 app.use(deviceRoutes);
-app.use(downloadRoutes)
+app.use(downloadRoutes);
+app.use(directoriesRoutes);
+
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json({ limit: "10mb", extended: true }));
