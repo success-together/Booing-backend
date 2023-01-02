@@ -55,11 +55,11 @@ const fragmentation = async (req, res) => {
           i = i + sliceLength;
           j++;
         }
-        if (fragments.length === 0) {
+        if (fragments.length === 0 && noad === 1) {
           let device_id = availableDevices[j]._id;
           fragmentPath = {
             fragmentID: j,
-            fragment: fragment,
+            fragment: encodedFile64,
             fileName: file.filename,
             user_id: user_id,
             devices: [{ device_id: device_id }, { device_id: device_id }],
