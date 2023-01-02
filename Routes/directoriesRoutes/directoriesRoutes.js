@@ -18,4 +18,9 @@ router.post(
   directoriesController.getDirectory
 );
 
+router.post(
+  "/booing/logged-in-user/recentDirectories",
+  directoriesController.getRecentDirectories
+);
+
 module.exports = router;

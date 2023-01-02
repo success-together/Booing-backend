@@ -33,6 +33,9 @@ const fragmentsSchema = new Schema({
     ref: "Fragments",
     default: null,
   },
+  openedAt: {
+    type: Date,
+  },
 });
 
 fragmentsSchema.post(/^find/, async function (result, next) {

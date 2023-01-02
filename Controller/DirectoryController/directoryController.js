@@ -6,9 +6,7 @@ const isArray = (arr) => {
 };
 
 // (async () => {
-//   console.log(
-//     await Fragments.deleteMany({ user_id: "63aa9a4ad26fce66dd0bfad6" })
-//   );
+//   console.log(await Fragments.find({}).sort("-created_at"));
 // })();
 
 const createDirectory = async (req, res, next) => {
@@ -114,12 +112,7 @@ const getAllDirectories = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "data returned successfully",
-      data: directories.map((directory) => ({
-        id: directory._id,
-        name: directory._doc.updates[0].fileName,
-        createdAt: directory._doc.created_at,
-        items: directory._doc.items.length,
-      })),
+      data: directories.map((directory) => formatDirectory(directory)),
     });
   } catch (e) {
     console.log({ error: e });
@@ -158,9 +151,45 @@ const getDirectory = async (req, res, next) => {
       });
     }
 
+    directory.openedAt = new Date();
+    await directory.save({ validateBeforeSave: true });
+
     res.status(200).json({
       status: "success",
       data: formatDirectory(directory, true),
+    });
+  } catch (e) {
+    console.log({ error: e });
+    res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+};
+
+const getRecentDirectories = async (req, res, next) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(401).json({
+      status: "fail",
+      message: "you must be logged in !",
+    });
+  }
+
+  try {
+    const directories = await Fragments.find({
+      user_id,
+      isDirectory: true,
+      isDeleted: false,
+    })
+      .sort("-openedAt")
+      .limit(4);
+
+    res.status(200).json({
+      status: "success",
+      message: "data returned successfully",
+      data: directories.map((directory) => formatDirectory(directory)),
     });
   } catch (e) {
     console.log({ error: e });
@@ -175,4 +204,5 @@ module.exports = {
   createDirectory,
   getAllDirectories,
   getDirectory,
+  getRecentDirectories,
 };
