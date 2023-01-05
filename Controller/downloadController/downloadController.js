@@ -60,7 +60,11 @@ const download = async (req, res) => {
     if (!user_id) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
-    const fragments = await Fragments.find({ user_id: user_id });
+    const fragments = await Fragments.find({
+      user_id: user_id,
+      isDeleted: false,
+      isDirectory: false,
+    });
     if (fragments.length == 0)
       return res.status(400).json({ msg: "no fragment found", success: false });
 

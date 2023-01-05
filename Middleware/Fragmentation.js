@@ -20,10 +20,10 @@ const fragmentation = async (req, res) => {
     );
     // get files
     let files = req.files;
-    console.log(files);
-    
+
+
     const filesData = await Promise.all(
-      files.map(async (file) => {
+      files?.map(async (file, index) => {
         console.log("file ", file);
 
         // Convert file to bytes (base64)
@@ -56,11 +56,11 @@ const fragmentation = async (req, res) => {
           i = i + sliceLength;
           j++;
         }
-        if (fragments.length === 0) {
+        if (fragments.length === 0 && noad === 1) {
           let device_id = availableDevices[j]._id;
           fragmentPath = {
             fragmentID: j,
-            fragment: fragment,
+            fragment: encodedFile64,
             fileName: file.filename,
             user_id: user_id,
             devices: [{ device_id: device_id }, { device_id: device_id }],
