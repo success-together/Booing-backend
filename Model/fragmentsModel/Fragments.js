@@ -23,6 +23,10 @@ const fragmentsSchema = new Schema({
     type: Boolean,
     default: false,
   },
+
+  size: {
+    type: Number,
+  },
   isDirectory: {
     type: Boolean,
     default: false,

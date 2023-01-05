@@ -21,6 +21,7 @@ const fragmentation = async (req, res) => {
     // get files
     let files = req.files;
 
+
     const filesData = await Promise.all(
       files?.map(async (file, index) => {
         console.log("file ", file);
@@ -77,7 +78,7 @@ const fragmentation = async (req, res) => {
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)
 
-        const id = await SendFragments(fragments, user_id, file.mimetype);
+        const id = await SendFragments(fragments, user_id, file.mimetype,file.size);
         return { id, name: file.filename };
       })
     );

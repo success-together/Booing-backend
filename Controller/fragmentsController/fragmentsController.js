@@ -1,6 +1,22 @@
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const mongoose = require("mongoose");
 
+const getUsedStorage = async (req, res) => {
+  const { user_id } = req.params;
+  try {
+    await Fragments.find({ user_id: user_id }, { updates: 0 })
+      .then((res) => {
+        console.log(res);
+        return res.status(200).json(res);
+      })
+      .catch((err) => {
+        return res.status(500).json({ msg: err?.message, success: false });
+      });
+  } catch (err) {
+    return res.status(500).json({ msg: err?.message, success: false });
+  }
+};
+
 const uploadFragments = async (req, res) => {
   try {
     const { file_id, fragment } = req.body;
@@ -230,6 +246,7 @@ module.exports = {
   checkForUploads,
   uploadFragments,
   deleteFiles,
+  getUsedStorage,
   getDeletedFiles,
   getMyFiles,
 };
