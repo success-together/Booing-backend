@@ -23,6 +23,9 @@ const fragmentsSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  size: {
+    type: Number,
+  },
 });
 
 const Fragments = model("Fragments", fragmentsSchema);

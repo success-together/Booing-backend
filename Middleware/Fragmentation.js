@@ -20,8 +20,10 @@ const fragmentation = async (req, res) => {
     );
     // get files
     let files = req.files;
+    console.log(files);
+    
     const filesData = await Promise.all(
-      files.map(async (file, index) => {
+      files.map(async (file) => {
         console.log("file ", file);
 
         // Convert file to bytes (base64)
@@ -76,7 +78,7 @@ const fragmentation = async (req, res) => {
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)
 
-        const id = await SendFragments(fragments, user_id, file.mimetype);
+        const id = await SendFragments(fragments, user_id, file.mimetype,file.size);
         return { id, name: file.filename };
       })
     );

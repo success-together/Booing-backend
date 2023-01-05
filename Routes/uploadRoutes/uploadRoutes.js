@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const route = Router();
 const uploadController = require("../../Controller/uploadFileController/uploadController");
-const Authentification = require("../../Middleware/Authentification");
 const upload = require("../../Middleware/UploadFile");
 const fragmentation = require("../../Middleware/Fragmentation");
 // Update password
