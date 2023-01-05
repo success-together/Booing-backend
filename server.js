@@ -42,6 +42,8 @@ mongoose.connect(
   process.env.DB_CONNECTION,
   {
     useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
     useUnifiedTopology: true,
   },
   () => {
@@ -68,4 +70,4 @@ app.use(directoriesRoutes);
 
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-app.use(bodyParser.json({ limit: "10mb", extended: true }));
+app.use(bodyParser.json());

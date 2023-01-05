@@ -34,9 +34,9 @@ const types = {
     return arr.includes(type) || arr.find((e) => e.includes(type));
   },
   apk: (type) => type === "application/vnd.android.package-archive",
-  video: (type) => type.startsWith("video/"),
-  audio: (type) => type.startsWith("audio/"),
-  image: (type) => type.startsWith("image/"),
+  video: (type) => type?.startsWith("video/"),
+  audio: (type) => type?.startsWith("audio/"),
+  image: (type) => type?.startsWith("image/"),
   download(type) {
     return (
       !this.doc(type) &&
