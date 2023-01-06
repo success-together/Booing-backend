@@ -18,7 +18,7 @@ const SendFragments = async (newFrags, user_id, type, size) => {
     }
     return "failed to send fragments, no fragments received!";
   } catch (err) {
-    return null;
+    return err?.message;
   }
 };
 

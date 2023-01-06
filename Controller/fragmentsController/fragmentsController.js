@@ -131,13 +131,31 @@ const deleteFiles = async (req, res) => {
         // ! delete fragment only after duration
         // { $set: { "updates.$[].fragment": "",
         { isDeleted: true }
-      ).catch((err) => {
-        return res.status(400).json({ msg: err?.message, success: false });
-      });
+      );
     });
     return res
       .status(200)
       .json({ msg: "File deleted successfully", success: true });
+  } catch (error) {
+    return res.status(500).json({ msg: error?.message, success: false });
+  }
+};
+
+const restoreFiles = async (req, res) => {
+  try {
+    const { files_id } = req.body;
+    files_id?.forEach(async (file_id) => {
+      await Fragments.findOneAndUpdate(
+        { _id: file_id },
+        // ! delete fragment only after duration
+        // { $set: { "updates.$[].fragment": "",
+        { isDeleted: false }
+      );
+    });
+
+    return res
+      .status(200)
+      .json({ msg: "File restored successfully", success: true });
   } catch (error) {
     return res.status(500).json({ msg: error?.message, success: false });
   }
@@ -248,5 +266,6 @@ module.exports = {
   deleteFiles,
   getUsedStorage,
   getDeletedFiles,
+  restoreFiles,
   getMyFiles,
 };
