@@ -22,7 +22,7 @@ const fragmentation = async (req, res) => {
     let files = req.files;
 
     const filesData = await Promise.all(
-      files?.map(async (file, index) => {
+      files?.map(async (file) => {
         console.log("file ", file);
 
         // Convert file to bytes (base64)
