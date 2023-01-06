@@ -21,6 +21,7 @@ const fragmentation = async (req, res) => {
     // get files
     let files = req.files;
 
+
     const filesData = await Promise.all(
       files?.map(async (file) => {
         console.log("file ", file);
