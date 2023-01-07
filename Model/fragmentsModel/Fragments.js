@@ -36,10 +36,18 @@ const fragmentsSchema = new Schema({
   openedAt: {
     type: Date,
   },
+  expireAt: {
+    type: Date,
+    expires: 60 * 60 * 24 * 7, // 7 days
+  },
 });
 
 fragmentsSchema.post(/^find/, async function (result, next) {
   const Model = this.model;
+
+  if (!result) {
+    return result;
+  }
 
   if (typeof result === "object" && Array.isArray(result)) {
     await Promise.all(

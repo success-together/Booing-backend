@@ -1,5 +1,7 @@
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const mongoose = require("mongoose");
+const isArray = require("../../Helpers/isArray");
+const isObjectId = require("../../Helpers/isObjectId");
 
 const uploadFragments = async (req, res) => {
   try {
@@ -109,12 +111,13 @@ const checkForUploads = async (req, res) => {
 const deleteFiles = async (req, res) => {
   try {
     const { files_id } = req.body;
+
     files_id?.forEach(async (file_id) => {
       await Fragments.findOneAndUpdate(
         { _id: file_id },
         // ! delete fragment only after duration
         // { $set: { "updates.$[].fragment": "",
-        { isDeleted: true }
+        { isDeleted: true, expireAt: new Date() }
       ).catch((err) => {
         return res.status(400).json({ msg: err?.message, success: false });
       });
@@ -127,10 +130,99 @@ const deleteFiles = async (req, res) => {
   }
 };
 
+const deleteFilesPermanently = async (req, res) => {
+  try {
+    const { files_ids, user_id } = req.body;
+
+    if (!isObjectId(user_id)) {
+      return res.status(401).json({
+        status: "fail",
+        message: "you must be logged in !",
+      });
+    }
+
+    if (!isArray(files_ids) || files_ids.some((id) => !isObjectId(id))) {
+      return res.status(401).json({
+        status: "fail",
+        message: "invalid files ids",
+      });
+    }
+
+    const files = await Fragments.find({ _id: { $in: files_ids } });
+
+    if (files.some((file) => file.user_id.toString() !== user_id)) {
+      return res.status(401).json({
+        status: "fail",
+        message: "you dont have permission to delete these files",
+      });
+    }
+
+    await Promise.all(files.map((file) => file.delete()));
+    return res.status(200).json({
+      status: "success",
+      message: "files delete successfully",
+    });
+  } catch (e) {
+    console.log({ error: e });
+    res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+};
+
+const restoreFiles = async (req, res) => {
+  try {
+    const { files_ids, user_id } = req.body;
+
+    if (!isObjectId(user_id)) {
+      return res.status(401).json({
+        status: "fail",
+        message: "you must be logged in !",
+      });
+    }
+
+    if (!isArray(files_ids) || files_ids.some((id) => !isObjectId(id))) {
+      return res.status(401).json({
+        status: "fail",
+        message: "invalid files ids",
+      });
+    }
+
+    const files = await Fragments.find({ _id: { $in: files_ids } });
+
+    if (files.some((file) => file.user_id.toString() !== user_id)) {
+      return res.status(401).json({
+        status: "fail",
+        message: "you dont have permission to restore these files",
+      });
+    }
+
+    await Promise.all(
+      files.map((file) => {
+        file.isDeleted = false;
+        file.expireAt = null;
+        return file.save();
+      })
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: "files restored successfully",
+    });
+  } catch (e) {
+    console.log({ error: e });
+    res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+};
+
 const getDeletedFiles = async (req, res) => {
   try {
     const { user_id } = req.params;
-    if (!user_id) {
+    if (!isObjectId(user_id)) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
     await Fragments.find({ isDeleted: true, user_id: user_id })
@@ -192,7 +284,7 @@ const getDeletedFiles = async (req, res) => {
 const getMyFiles = async (req, res, next) => {
   const { user_id } = req.body;
 
-  if (!user_id) {
+  if (!isObjectId(user_id)) {
     return res.status(401).json({
       status: "fail",
       message: "you must be logged in !",
@@ -232,4 +324,6 @@ module.exports = {
   deleteFiles,
   getDeletedFiles,
   getMyFiles,
+  deleteFilesPermanently,
+  restoreFiles,
 };
