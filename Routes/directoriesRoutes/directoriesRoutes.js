@@ -23,4 +23,24 @@ router.post(
   directoriesController.getRecentDirectories
 );
 
+router.post(
+  "/booing/logged-in-user/deleteDirectory/:id",
+  directoriesController.deleteDirectory
+);
+
+router.post(
+  "/booing/logged-in-user/renameDirectory/:id",
+  directoriesController.renameDirectory
+);
+
+router.post(
+  "/booing/logged-in-user/copyDirectory/:id",
+  directoriesController.copyDirectory
+);
+
+router.post(
+  "/booing/logged-in-user/addFilesToDirectory/:id",
+  directoriesController.addFilesToDirectory
+);
+
 module.exports = router;

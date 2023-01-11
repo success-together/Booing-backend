@@ -2,6 +2,7 @@ const { file } = require("googleapis/build/src/apis/file");
 const { downloadFile } = require("../../Middleware/DownloadFile");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const fs = require("fs");
+const isObjectId = require("../../Helpers/isObjectId");
 
 const types = {
   doc: (type) => {
@@ -57,7 +58,7 @@ const download = async (req, res) => {
     if (!Object.keys(types).includes(type)) {
       return res.status(403).json({ msg: "invalid type", success: false });
     }
-    if (!user_id) {
+    if (!isObjectId(user_id)) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
     const fragments = await Fragments.find({
