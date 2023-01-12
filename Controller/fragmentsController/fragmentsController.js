@@ -9,11 +9,20 @@ const getUsedStorage = async (req, res) => {
     await Fragments.find({ user_id: user_id }, { updates: 0 })
       .then((res) => {
         console.log(res);
-        return res.status(200).json(res);
+        // return res.status(200).json(res);
       })
       .catch((err) => {
         return res.status(500).json({ msg: err?.message, success: false });
       });
+    const usedStorage = await Fragments.aggregate([
+      { $match: { user_id: mongoose.Types.ObjectId(user_id) } },
+      { $group: { _id: null, total: { $sum: "$size" } } },
+    ]);
+    if (usedStorage)
+      return res.status(200).json({ success: true, data: usedStorage });
+
+    return res.status(400).json({ success: flase, mssg: "error" });
+    
   } catch (err) {
     return res.status(500).json({ msg: err?.message, success: false });
   }
