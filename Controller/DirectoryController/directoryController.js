@@ -55,6 +55,7 @@ const formatDirectory = (directory, extendedItems) => {
     name: directory._doc.updates[0].fileName,
     createdAt: directory._doc.created_at,
     isDirectory: directory._doc.isDirectory,
+    type: directory._doc.type,
     items: extendedItems
       ? directory._doc.items.map((subDirectory) =>
           subDirectory.isDirectory
@@ -64,6 +65,7 @@ const formatDirectory = (directory, extendedItems) => {
                 name: subDirectory._doc.updates[0].fileName,
                 createdAt: subDirectory._doc.created_at,
                 isDirectory: false,
+                type: subDirectory._doc.type,
               }
         )
       : directory._doc.items.length,
@@ -380,14 +382,6 @@ const deepDirCopy = async (directory, parentId) => {
 
   await Promise.all(promises);
 };
-
-(async () => {
-  // const dirs = await Fragments.find({ user_id: "63b4869a2d49832e6d14e944" });
-  // console.log(dirs.forEach((dir) => console.log(dir)));
-  // deepDirCopy(dirs[dirs.length - 1]);
-  // await Fragments.deleteMany({});
-  // await Promise.all(dirs.map((dir) => dir.delete()));
-})();
 
 const copyDirectory = async (req, res, next) => {
   const { user_id } = req.body;

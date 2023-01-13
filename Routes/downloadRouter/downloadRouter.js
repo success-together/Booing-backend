@@ -9,6 +9,7 @@ const {
   deleteFiles,
   getUsedStorage,
   deleteFilesPermanently,
+  restoreFiles,
 } = require("../../Controller/fragmentsController/fragmentsController");
 const route = Router();
 const downloadController = require("../../Controller/downloadController/downloadController");

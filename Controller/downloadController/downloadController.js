@@ -5,7 +5,7 @@ const fs = require("fs");
 const isObjectId = require("../../Helpers/isObjectId");
 
 const types = {
-  doc: (type) => {
+  document: (type) => {
     const arr = [
       "text/csv",
       "application/msword",
@@ -40,7 +40,7 @@ const types = {
   image: (type) => type?.startsWith("image/"),
   download(type) {
     return (
-      !this.doc(type) &&
+      !this.document(type) &&
       !this.apk(type) &&
       !this.video(type) &&
       !this.audio(type) &&
