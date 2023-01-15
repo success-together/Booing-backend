@@ -99,6 +99,7 @@ const download = async (req, res) => {
             uri: elementToPush,
             id: item._id,
             name: fileName + "." + extension,
+            createdAt: item.created_at,
           });
         }
       }

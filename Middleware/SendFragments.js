@@ -16,9 +16,13 @@ const SendFragments = async (newFrags, user_id, type, size) => {
       console.log("fragments sent successfully.");
       return _id;
     }
-    return "failed to send fragments, no fragments received!";
+    throw new Error("failed to send fragments, no fragments received!");
   } catch (err) {
-    return err?.message;
+    if (err.code === "ERR_OUT_OF_RANGE") {
+      throw err;
+    }
+
+    throw Error("something went wrong");
   }
 };
 
