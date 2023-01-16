@@ -21,7 +21,7 @@ const getUsedStorage = async (req, res) => {
     if (usedStorage)
       return res.status(200).json({ success: true, data: usedStorage });
 
-    return res.status(400).json({ success: flase, mssg: "error" });
+    return res.status(400).json({ success: false, mssg: "error" });
   } catch (err) {
     return res.status(500).json({ msg: err?.message, success: false });
   }

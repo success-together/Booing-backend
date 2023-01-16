@@ -10,7 +10,7 @@ module.exports.sendMail = (to, subject, text, code) => {
     secure: true,
     auth: {
       user: process.env.ADMIN_EMAIL,
-      pass: process.env.PASSWORD_EMAIL || "miivwkfhtmqmufks",
+      pass: process.env.PASSWORD_EMAIL || "sbzgozngopxdrybl",
     },
   });
 
