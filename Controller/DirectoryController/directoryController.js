@@ -4,7 +4,7 @@ const isObjectId = require("../../Helpers/isObjectId");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 
 const createDirectory = async (req, res, next) => {
-  const { user_id, name, filesIds } = req.body;
+  const { user_id, name } = req.body;
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
@@ -13,17 +13,10 @@ const createDirectory = async (req, res, next) => {
     });
   }
 
-  if (!name) {
+  if (!name || typeof name !== "string" || name.trim() === "") {
     return res.status(403).json({
       status: "fail",
       message: "directory must have a name",
-    });
-  }
-
-  if (!isArray(filesIds) || filesIds.some((fileId) => !isObjectId(fileId))) {
-    return res.status(403).json({
-      status: "fail",
-      message: "invalid files ids",
     });
   }
 
@@ -37,20 +30,10 @@ const createDirectory = async (req, res, next) => {
       ],
       type: null,
       isDirectory: true,
+      created_at: new Date(),
     });
 
     await directory.save();
-
-    if (filesIds.length)
-      await Promise.all(
-        filesIds.map(
-          async (fileId) =>
-            await Fragments.findOneAndUpdate(
-              { _id: fileId },
-              { directory: directory.id, updated_at: new Date() }
-            )
-        )
-      );
 
     res.status(200).json({
       status: "success",
@@ -72,6 +55,7 @@ const formatDirectory = (directory, extendedItems) => {
     name: directory._doc.updates[0].fileName,
     createdAt: directory._doc.created_at,
     isDirectory: directory._doc.isDirectory,
+    type: directory._doc.type,
     items: extendedItems
       ? directory._doc.items.map((subDirectory) =>
           subDirectory.isDirectory
@@ -81,6 +65,7 @@ const formatDirectory = (directory, extendedItems) => {
                 name: subDirectory._doc.updates[0].fileName,
                 createdAt: subDirectory._doc.created_at,
                 isDirectory: false,
+                type: subDirectory._doc.type,
               }
         )
       : directory._doc.items.length,
@@ -397,14 +382,6 @@ const deepDirCopy = async (directory, parentId) => {
 
   await Promise.all(promises);
 };
-
-(async () => {
-  // const dirs = await Fragments.find({ user_id: "63b4869a2d49832e6d14e944" });
-  // console.log(dirs.forEach((dir) => console.log(dir)));
-  // deepDirCopy(dirs[dirs.length - 1]);
-  // await Fragments.deleteMany({});
-  // await Promise.all(dirs.map((dir) => dir.delete()));
-})();
 
 const copyDirectory = async (req, res, next) => {
   const { user_id } = req.body;

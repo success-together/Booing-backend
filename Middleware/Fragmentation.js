@@ -21,7 +21,6 @@ const fragmentation = async (req, res) => {
     // get files
     let files = req.files;
 
-
     const filesData = await Promise.all(
       files?.map(async (file) => {
         console.log("file ", file);
@@ -78,7 +77,13 @@ const fragmentation = async (req, res) => {
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)
 
-        const id = await SendFragments(fragments, user_id, file.mimetype,file.size);
+        const id = await SendFragments(
+          fragments,
+          user_id,
+          file.mimetype,
+          file.size
+        );
+
         return { id, name: file.filename };
       })
     );
@@ -88,6 +93,15 @@ const fragmentation = async (req, res) => {
       data: filesData,
     });
   } catch (e) {
+    console.log({ error: e });
+
+    if (e.code === "ERR_OUT_OF_RANGE") {
+      return res.status(403).json({
+        status: "fail",
+        message: "file has exceeded the maximum size (16mb) ",
+      });
+    }
+
     res.status(500).json({
       message: e.message,
     });

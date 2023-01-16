@@ -22,7 +22,6 @@ const getUsedStorage = async (req, res) => {
       return res.status(200).json({ success: true, data: usedStorage });
 
     return res.status(400).json({ success: flase, mssg: "error" });
-    
   } catch (err) {
     return res.status(500).json({ msg: err?.message, success: false });
   }
@@ -137,16 +136,17 @@ const deleteFiles = async (req, res) => {
   try {
     const { files_id } = req.body;
 
-    files_id?.forEach(async (file_id) => {
-      await Fragments.findOneAndUpdate(
-        { _id: file_id },
-        // ! delete fragment only after duration
-        // { $set: { "updates.$[].fragment": "",
-        { isDeleted: true, expireAt: new Date() }
-      ).catch((err) => {
-        return res.status(400).json({ msg: err?.message, success: false });
-      });
-    });
+    await Promise.all(
+      files_id?.map((file_id) =>
+        Fragments.findOneAndUpdate(
+          { _id: file_id },
+          // ! delete fragment only after duration
+          // { $set: { "updates.$[].fragment": "",
+          { isDeleted: true, expireAt: new Date() }
+        )
+      )
+    );
+
     return res
       .status(200)
       .json({ msg: "File deleted successfully", success: true });
