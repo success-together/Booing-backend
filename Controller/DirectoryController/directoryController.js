@@ -4,7 +4,7 @@ const isObjectId = require("../../Helpers/isObjectId");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 
 const createDirectory = async (req, res, next) => {
-  const { user_id, name } = req.body;
+  const { user_id, name, dir } = req.body;
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
@@ -32,6 +32,10 @@ const createDirectory = async (req, res, next) => {
       isDirectory: true,
       created_at: new Date(),
     });
+
+    if (isObjectId(dir)) {
+      directory.directory = dir;
+    }
 
     await directory.save();
 
@@ -66,6 +70,10 @@ const formatDirectory = (directory, extendedItems) => {
                 createdAt: subDirectory._doc.created_at,
                 isDirectory: false,
                 type: subDirectory._doc.type,
+                uri: subDirectory._doc.updates.reduce(
+                  (acc, update) => acc + update.fragment,
+                  `data:${subDirectory._doc.type};base64,`
+                ),
               }
         )
       : directory._doc.items.length,
