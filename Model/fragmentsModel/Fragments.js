@@ -57,14 +57,20 @@ fragmentsSchema.post(/^find/, async function (result, next) {
     await Promise.all(
       result.map(async (item) => {
         if (item.isDirectory) {
-          item._doc.items = await Model.find({ directory: item._doc._id });
+          item._doc.items = await Model.find({
+            directory: item._doc._id,
+            isDeleted: false,
+          });
         }
         return item;
       })
     );
   } else {
     if (result.isDirectory) {
-      result._doc.items = await Model.find({ directory: result._doc._id });
+      result._doc.items = await Model.find({
+        directory: result._doc._id,
+        isDeleted: false,
+      });
     }
   }
 
