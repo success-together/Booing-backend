@@ -95,6 +95,7 @@ const getAllDirectories = async (req, res, next) => {
       user_id,
       isDirectory: true,
       isDeleted: false,
+      directory: null,
     });
 
     res.status(200).json({
