@@ -10,13 +10,13 @@ module.exports.sendMail = (to, subject, text, code) => {
     secure: true,
     auth: {
       user: process.env.ADMIN_EMAIL,
-      pass: process.env.PASSWORD_EMAIL || "sbzgozngopxdrybl",
+      pass: process.env.PASSWORD_EMAIL || "T3mp0ran3a!",
     },
   });
 
   // Step 2
   let mailOptions = {
-    from: 'bnyassine216@gmail.com', // TODO: email sender
+    from: 'booingcloud@gmail.com', // TODO: email sender
     to: to, // TODO: email receiver
     subject: subject,
     text: text,
