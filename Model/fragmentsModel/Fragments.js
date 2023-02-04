@@ -23,6 +23,10 @@ const fragmentsSchema = new Schema({
     type: Boolean,
     default: false,
   },
+
+  size: {
+    type: Number,
+  },
   isDirectory: {
     type: Boolean,
     default: false,
@@ -36,23 +40,37 @@ const fragmentsSchema = new Schema({
   openedAt: {
     type: Date,
   },
+  expireAt: {
+    type: Date,
+    expires: 60 * 60 * 24 * 7, // 7 days
+  },
 });
 
 fragmentsSchema.post(/^find/, async function (result, next) {
   const Model = this.model;
 
+  if (!result) {
+    return result;
+  }
+
   if (typeof result === "object" && Array.isArray(result)) {
     await Promise.all(
       result.map(async (item) => {
         if (item.isDirectory) {
-          item._doc.items = await Model.find({ directory: item._doc._id });
+          item._doc.items = await Model.find({
+            directory: item._doc._id,
+            isDeleted: false,
+          });
         }
         return item;
       })
     );
   } else {
     if (result.isDirectory) {
-      result._doc.items = await Model.find({ directory: result._doc._id });
+      result._doc.items = await Model.find({
+        directory: result._doc._id,
+        isDeleted: false,
+      });
     }
   }
 

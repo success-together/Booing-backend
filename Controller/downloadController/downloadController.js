@@ -2,9 +2,10 @@ const { file } = require("googleapis/build/src/apis/file");
 const { downloadFile } = require("../../Middleware/DownloadFile");
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const fs = require("fs");
+const isObjectId = require("../../Helpers/isObjectId");
 
 const types = {
-  doc: (type) => {
+  document: (type) => {
     const arr = [
       "text/csv",
       "application/msword",
@@ -39,7 +40,7 @@ const types = {
   image: (type) => type?.startsWith("image/"),
   download(type) {
     return (
-      !this.doc(type) &&
+      !this.document(type) &&
       !this.apk(type) &&
       !this.video(type) &&
       !this.audio(type) &&
@@ -57,7 +58,7 @@ const download = async (req, res) => {
     if (!Object.keys(types).includes(type)) {
       return res.status(403).json({ msg: "invalid type", success: false });
     }
-    if (!user_id) {
+    if (!isObjectId(user_id)) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
     const fragments = await Fragments.find({
@@ -98,6 +99,7 @@ const download = async (req, res) => {
             uri: elementToPush,
             id: item._id,
             name: fileName + "." + extension,
+            createdAt: item.created_at,
           });
         }
       }
