@@ -2,9 +2,10 @@ const User = require("../../Model/userModel/User");
 const bcrypt = require("bcryptjs");
 const createToken = require("../../Helpers/createToken.js");
 const {
-  sendEmailRegister,
+  // sendEmailRegister,
   sendMail,
 } = require("../../Helpers/nodeMailer/Mailer");
+const Wallet = require("../../Model/WalletModel/Wallet");
 
 // User Signup
 const signup = async (req, res) => {
@@ -38,16 +39,20 @@ const signup = async (req, res) => {
     });
 
     // Save the New User into the Database
-    await user.save().then(() => {
-      //Return success message and the user
-      let text =
-        "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
-      sendMail(email, " Confirm your email adress. ", text, code);
-      return res.status(200).json({
-        msg: "Code sent succussefuly, check your email .",
-        success: true,
-        data: user,
-      });
+    const savedUser = await user.save();
+    //Return success message and the user
+    let text =
+      "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
+    sendMail(email, " Confirm your email adress. ", text, code);
+
+    // CREATE NEW USER WALLET
+    const wallet = new Wallet({ user_id: savedUser._id });
+    await wallet.save();
+
+    return res.status(200).json({
+      msg: "Code sent succussefuly, check your email .",
+      success: true,
+      data: user,
     });
   } catch (err) {
     //Return errors
@@ -139,7 +144,6 @@ const signin = async (req, res) => {
         .json({ msg: "Account not verified", success: false });
     }
     const signinToken = createToken.signinToken({ id: user._id });
-    console.log(signinToken);
     user = await User.findOneAndUpdate(
       { email },
       { last_login: Date.now() }
