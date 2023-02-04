@@ -8,17 +8,26 @@ const createDirectory = async (req, res, next) => {
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
-      status: "fail",
+      success: false,
       message: "you must be logged in !",
     });
   }
 
   if (!name || typeof name !== "string" || name.trim() === "") {
     return res.status(403).json({
-      status: "fail",
+      success: false,
       message: "directory must have a name",
     });
   }
+
+
+  if (!isArray(filesIds)) {
+    return res.status(403).json({
+      success: false,
+      message: "filesIds must be an array",
+    });
+  }
+
 
   try {
     const directory = new Fragments({
@@ -40,14 +49,14 @@ const createDirectory = async (req, res, next) => {
     await directory.save();
 
     res.status(200).json({
-      status: "success",
+      success: true,
       message: "directory has been created successfully !",
       data: directory,
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      status: "fail",
+      success: false,
       message: "something went wrong",
     });
   }
@@ -85,7 +94,7 @@ const getAllDirectories = async (req, res, next) => {
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
-      status: "fail",
+      success: false,
       message: "you must be logged in !",
     });
   }
@@ -99,14 +108,14 @@ const getAllDirectories = async (req, res, next) => {
     });
 
     res.status(200).json({
-      status: "success",
+      success: true,
       message: "data returned successfully",
       data: directories.map((directory) => formatDirectory(directory)),
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      status: "fail",
+      success: false,
       message: "something went wrong",
     });
   }
@@ -118,7 +127,7 @@ const getDirectory = async (req, res, next) => {
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
-      status: "fail",
+      success: false,
       message: "you must be logged in !",
     });
   }
@@ -126,7 +135,7 @@ const getDirectory = async (req, res, next) => {
   try {
     if (!isObjectId(id)) {
       return res.status(403).json({
-        status: "fail",
+        success: false,
         message: "invalid directory id",
       });
     }
@@ -134,8 +143,10 @@ const getDirectory = async (req, res, next) => {
     const directory = await Fragments.findById(id);
 
     if (!directory) {
-      return res.status(403).json({
-        status: "fail",
+
+      res.status(403).json({
+        success: false,
+
         message: "no directory with the given id",
       });
     }
@@ -158,13 +169,13 @@ const getDirectory = async (req, res, next) => {
     await directory.save({ validateBeforeSave: true });
 
     res.status(200).json({
-      status: "success",
+      success: true,
       data: formatDirectory(directory, true),
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      status: "fail",
+      success: false,
       message: "something went wrong",
     });
   }
@@ -528,7 +539,7 @@ const getRecentDirectories = async (req, res, next) => {
 
   if (!isObjectId(user_id)) {
     return res.status(401).json({
-      status: "fail",
+      success: false,
       message: "you must be logged in !",
     });
   }
@@ -543,14 +554,14 @@ const getRecentDirectories = async (req, res, next) => {
       .limit(4);
 
     res.status(200).json({
-      status: "success",
+      success: true,
       message: "data returned successfully",
       data: directories.map((directory) => formatDirectory(directory)),
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      status: "fail",
+      success: false,
       message: "something went wrong",
     });
   }

@@ -17,6 +17,7 @@ const uploadFileRoutes = require("./Routes/uploadRoutes/uploadRoutes");
 const deviceRoutes = require("./Routes/deviceRoutes/DeviceRoutes");
 const downloadRoutes = require("./Routes/downloadRouter/downloadRouter");
 const directoriesRoutes = require("./Routes/directoriesRoutes/directoriesRoutes");
+const walletRoutes = require('./Routes/walletRoutes/walletRoutes')
 
 //Dotenv configuration
 const dotenv = require("dotenv");
@@ -65,6 +66,7 @@ app.use(uploadFileRoutes);
 app.use(deviceRoutes);
 app.use(downloadRoutes);
 app.use(directoriesRoutes);
+app.use(walletRoutes);
 
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
