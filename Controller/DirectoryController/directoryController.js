@@ -20,11 +20,7 @@ const createDirectory = async (req, res, next) => {
     });
   }
 
-  // if (!isArray(filesIds)) {
-  //   return res.status(403).json({
-  //     success: false,
-  //     message: "filesIds must be an array",
-  //   });
+
 
   try {
     const directory = new Fragments({
@@ -140,8 +136,10 @@ const getDirectory = async (req, res, next) => {
     const directory = await Fragments.findById(id);
 
     if (!directory) {
+
       return res.status(403).json({
         success: false,
+
         message: "no directory with the given id",
       });
     }
