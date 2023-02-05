@@ -20,12 +20,11 @@ const createDirectory = async (req, res, next) => {
     });
   }
 
-  if (!isArray(filesIds)) {
-    return res.status(403).json({
-      success: false,
-      message: "filesIds must be an array",
-    });
-  }
+  // if (!isArray(filesIds)) {
+  //   return res.status(403).json({
+  //     success: false,
+  //     message: "filesIds must be an array",
+  //   });
 
   try {
     const directory = new Fragments({
@@ -177,358 +176,358 @@ const getDirectory = async (req, res, next) => {
   }
 };
 
-const deleteFolderRecursivly = async (directory) => {
-  if (!directory) {
-    return null;
-  }
-  directory.isDeleted = true;
-  directory.expireAt = new Date();
+// const deleteFolderRecursivly = async (directory) => {
+//   if (!directory) {
+//     return null;
+//   }
+//   directory.isDeleted = true;
+//   directory.expireAt = new Date();
 
-  await Promise.all([
-    directory.save(),
-    Fragments.updateMany(
-      {
-        directory: directory._id,
-        isDirectory: false,
-        isDeleted: false,
-      },
-      {
-        isDeleted: true,
-        expireAt: new Date(),
-      }
-    ),
-    Fragments.find({
-      directory: directory._id,
-      isDirectory: true,
-      isDeleted: false,
-    }).then(
-      async (dirs) =>
-        await Promise.all(dirs.map((dir) => deleteFolderRecursivly(dir)))
-    ),
-  ]);
-};
+//   await Promise.all([
+//     directory.save(),
+//     Fragments.updateMany(
+//       {
+//         directory: directory._id,
+//         isDirectory: false,
+//         isDeleted: false,
+//       },
+//       {
+//         isDeleted: true,
+//         expireAt: new Date(),
+//       }
+//     ),
+//     Fragments.find({
+//       directory: directory._id,
+//       isDirectory: true,
+//       isDeleted: false,
+//     }).then(
+//       async (dirs) =>
+//         await Promise.all(dirs.map((dir) => deleteFolderRecursivly(dir)))
+//     ),
+//   ]);
+// };
 
-const deleteDirectory = async (req, res, next) => {
-  const { user_id } = req.body;
-  const { id } = req.params;
+// const deleteDirectory = async (req, res, next) => {
+//   const { user_id } = req.body;
+//   const { id } = req.params;
 
-  if (!isObjectId(user_id)) {
-    return res.status(401).json({
-      status: "fail",
-      message: "you must be logged in !",
-    });
-  }
+//   if (!isObjectId(user_id)) {
+//     return res.status(401).json({
+//       status: "fail",
+//       message: "you must be logged in !",
+//     });
+//   }
 
-  try {
-    if (!isObjectId(id)) {
-      return res.status(403).json({
-        status: "fail",
-        message: "invalid directory id",
-      });
-    }
+//   try {
+//     if (!isObjectId(id)) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "invalid directory id",
+//       });
+//     }
 
-    const directory = await Fragments.findById(id);
+//     const directory = await Fragments.findById(id);
 
-    if (!directory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "no directory with the given id",
-      });
-    }
+//     if (!directory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "no directory with the given id",
+//       });
+//     }
 
-    if (!directory.isDirectory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "the given id is not a folder",
-      });
-    }
+//     if (!directory.isDirectory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "the given id is not a folder",
+//       });
+//     }
 
-    if (directory.user_id?.toString() !== user_id) {
-      return res.status(403).json({
-        status: "fail",
-        message: "you dont have permission to delete this folder",
-      });
-    }
+//     if (directory.user_id?.toString() !== user_id) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "you dont have permission to delete this folder",
+//       });
+//     }
 
-    await deleteFolderRecursivly(directory);
+//     await deleteFolderRecursivly(directory);
 
-    res.status(200).json({
-      status: "success",
-      message: "folder delete successfully",
-    });
-  } catch (e) {
-    console.log({ error: e });
-    res.status(500).json({
-      status: "fail",
-      message: "something went wrong",
-    });
-  }
-};
+//     res.status(200).json({
+//       status: "success",
+//       message: "folder delete successfully",
+//     });
+//   } catch (e) {
+//     console.log({ error: e });
+//     res.status(500).json({
+//       status: "fail",
+//       message: "something went wrong",
+//     });
+//   }
+// };
 
-const renameDirectory = async (req, res, next) => {
-  const { user_id, newName } = req.body;
-  const { id } = req.params;
+// const renameDirectory = async (req, res, next) => {
+//   const { user_id, newName } = req.body;
+//   const { id } = req.params;
 
-  if (!isObjectId(user_id)) {
-    return res.status(401).json({
-      status: "fail",
-      message: "you must be logged in !",
-    });
-  }
+//   if (!isObjectId(user_id)) {
+//     return res.status(401).json({
+//       status: "fail",
+//       message: "you must be logged in !",
+//     });
+//   }
 
-  if (!newName || typeof newName !== "string" || newName.trim() === "") {
-    return res.status(401).json({
-      status: "fail",
-      message: "invalid new folder name",
-    });
-  }
+//   if (!newName || typeof newName !== "string" || newName.trim() === "") {
+//     return res.status(401).json({
+//       status: "fail",
+//       message: "invalid new folder name",
+//     });
+//   }
 
-  try {
-    if (!isObjectId(id)) {
-      return res.status(403).json({
-        status: "fail",
-        message: "invalid directory id",
-      });
-    }
+//   try {
+//     if (!isObjectId(id)) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "invalid directory id",
+//       });
+//     }
 
-    const directory = await Fragments.findById(id);
+//     const directory = await Fragments.findById(id);
 
-    if (!directory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "no directory with the given id",
-      });
-    }
+//     if (!directory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "no directory with the given id",
+//       });
+//     }
 
-    if (!directory.isDirectory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "the given id is not a folder",
-      });
-    }
+//     if (!directory.isDirectory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "the given id is not a folder",
+//       });
+//     }
 
-    if (directory.user_id?.toString() !== user_id) {
-      return res.status(403).json({
-        status: "fail",
-        message: "you dont have permission to rename this folder",
-      });
-    }
+//     if (directory.user_id?.toString() !== user_id) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "you dont have permission to rename this folder",
+//       });
+//     }
 
-    if (
-      directory.updates &&
-      directory.updates[0] &&
-      directory.updates[0].fileName
-    ) {
-      directory.updates[0].fileName = newName;
-    } else {
-      directory.updates = [];
-      directory.updates.unshift({ fileName: newName });
-    }
+//     if (
+//       directory.updates &&
+//       directory.updates[0] &&
+//       directory.updates[0].fileName
+//     ) {
+//       directory.updates[0].fileName = newName;
+//     } else {
+//       directory.updates = [];
+//       directory.updates.unshift({ fileName: newName });
+//     }
 
-    directory.markModified("updates");
-    await directory.save();
+//     directory.markModified("updates");
+//     await directory.save();
 
-    console.log(await Fragments.findOne({ _id: directory._id }));
+//     console.log(await Fragments.findOne({ _id: directory._id }));
 
-    res.status(200).json({
-      status: "success",
-      message: "folder delete successfully",
-    });
-  } catch (e) {
-    console.log({ error: e });
-    res.status(500).json({
-      status: "fail",
-      message: "something went wrong",
-    });
-  }
-};
+//     res.status(200).json({
+//       status: "success",
+//       message: "folder delete successfully",
+//     });
+//   } catch (e) {
+//     console.log({ error: e });
+//     res.status(500).json({
+//       status: "fail",
+//       message: "something went wrong",
+//     });
+//   }
+// };
 
-const getItemName = (dir) => dir.updates[0].fileName;
+// const getItemName = (dir) => dir.updates[0].fileName;
 
-const getCopyName = async (item) => {
-  const itemName = getItemName(item);
-  const items = await Fragments.find({
-    user_id: item.user_id,
-    _id: { $ne: item._id },
-  }).sort("created_at");
-  const previousCopies = items.filter((copy) =>
-    getItemName(copy).startsWith(itemName)
-  );
-  if (previousCopies.length === 0) {
-    return itemName + "(1)";
-  }
+// const getCopyName = async (item) => {
+//   const itemName = getItemName(item);
+//   const items = await Fragments.find({
+//     user_id: item.user_id,
+//     _id: { $ne: item._id },
+//   }).sort("created_at");
+//   const previousCopies = items.filter((copy) =>
+//     getItemName(copy).startsWith(itemName)
+//   );
+//   if (previousCopies.length === 0) {
+//     return itemName + "(1)";
+//   }
 
-  const lastCopy = previousCopies[previousCopies.length - 1];
-  const copyNumber = +getItemName(lastCopy)
-    .replace(itemName, "")
-    .replace("(", "")
-    .replace(")", "");
-  return `${itemName}(${copyNumber + 1})`;
-};
+//   const lastCopy = previousCopies[previousCopies.length - 1];
+//   const copyNumber = +getItemName(lastCopy)
+//     .replace(itemName, "")
+//     .replace("(", "")
+//     .replace(")", "");
+//   return `${itemName}(${copyNumber + 1})`;
+// };
 
-const deepDirCopy = async (directory, parentId) => {
-  if (!directory) {
-    return null;
-  }
+// const deepDirCopy = async (directory, parentId) => {
+//   if (!directory) {
+//     return null;
+//   }
 
-  const copyName = await getCopyName(directory);
-  const copy = new Fragments({ ...directory.toObject(), _id: undefined });
+//   const copyName = await getCopyName(directory);
+//   const copy = new Fragments({ ...directory.toObject(), _id: undefined });
 
-  if (copy.updates && copy.updates[0] && copy.updates[0].fileName) {
-    copy.updates[0].fileName = copyName;
-  } else {
-    copy.updates = [];
-    copy.updates.unshift({ fileName: copyName });
-  }
+//   if (copy.updates && copy.updates[0] && copy.updates[0].fileName) {
+//     copy.updates[0].fileName = copyName;
+//   } else {
+//     copy.updates = [];
+//     copy.updates.unshift({ fileName: copyName });
+//   }
 
-  copy.directory = parentId;
+//   copy.directory = parentId;
 
-  const promises = [Fragments.create(copy)];
-  if (directory.isDirectory) {
-    promises.push(
-      Fragments.find({
-        user_id: directory.user_id,
-        directory: directory._id,
-        isDeleted: false,
-      }).then((items) =>
-        Promise.all(items.map((item) => deepDirCopy(item, copy.id)))
-      )
-    );
-  }
+//   const promises = [Fragments.create(copy)];
+//   if (directory.isDirectory) {
+//     promises.push(
+//       Fragments.find({
+//         user_id: directory.user_id,
+//         directory: directory._id,
+//         isDeleted: false,
+//       }).then((items) =>
+//         Promise.all(items.map((item) => deepDirCopy(item, copy.id)))
+//       )
+//     );
+//   }
 
-  await Promise.all(promises);
-};
+//   await Promise.all(promises);
+// };
 
-const copyDirectory = async (req, res, next) => {
-  const { user_id } = req.body;
-  const { id } = req.params;
+// const copyDirectory = async (req, res, next) => {
+//   const { user_id } = req.body;
+//   const { id } = req.params;
 
-  if (!isObjectId(user_id)) {
-    return res.status(401).json({
-      status: "fail",
-      message: "you must be logged in !",
-    });
-  }
+//   if (!isObjectId(user_id)) {
+//     return res.status(401).json({
+//       status: "fail",
+//       message: "you must be logged in !",
+//     });
+//   }
 
-  try {
-    if (!isObjectId(id)) {
-      return res.status(403).json({
-        status: "fail",
-        message: "invalid directory id",
-      });
-    }
+//   try {
+//     if (!isObjectId(id)) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "invalid directory id",
+//       });
+//     }
 
-    const directory = await Fragments.findById(id);
+//     const directory = await Fragments.findById(id);
 
-    if (!directory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "no directory with the given id",
-      });
-    }
+//     if (!directory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "no directory with the given id",
+//       });
+//     }
 
-    if (!directory.isDirectory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "the given id is not a folder",
-      });
-    }
+//     if (!directory.isDirectory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "the given id is not a folder",
+//       });
+//     }
 
-    if (directory.user_id?.toString() !== user_id) {
-      return res.status(403).json({
-        status: "fail",
-        message: "you dont have permission to rename this folder",
-      });
-    }
+//     if (directory.user_id?.toString() !== user_id) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "you dont have permission to rename this folder",
+//       });
+//     }
 
-    await deepDirCopy(directory);
+//     await deepDirCopy(directory);
 
-    res.status(200).json({
-      status: "success",
-      message: "folder delete successfully",
-    });
-  } catch (e) {
-    console.log({ error: e });
-    res.status(500).json({
-      status: "fail",
-      message: "something went wrong",
-    });
-  }
-};
+//     res.status(200).json({
+//       status: "success",
+//       message: "folder delete successfully",
+//     });
+//   } catch (e) {
+//     console.log({ error: e });
+//     res.status(500).json({
+//       status: "fail",
+//       message: "something went wrong",
+//     });
+//   }
+// };
 
-const addFilesToDirectory = async (req, res, next) => {
-  const { user_id, files_ids } = req.body;
-  const { id } = req.params;
+// const addFilesToDirectory = async (req, res, next) => {
+//   const { user_id, files_ids } = req.body;
+//   const { id } = req.params;
 
-  if (!isObjectId(user_id)) {
-    return res.status(401).json({
-      status: "fail",
-      message: "you must be logged in !",
-    });
-  }
+//   if (!isObjectId(user_id)) {
+//     return res.status(401).json({
+//       status: "fail",
+//       message: "you must be logged in !",
+//     });
+//   }
 
-  if (!isArray(files_ids) || files_ids.some((fileId) => !isObjectId(fileId))) {
-    return res.status(403).json({
-      status: "fail",
-      message: "invalid files ids",
-    });
-  }
+//   if (!isArray(files_ids) || files_ids.some((fileId) => !isObjectId(fileId))) {
+//     return res.status(403).json({
+//       status: "fail",
+//       message: "invalid files ids",
+//     });
+//   }
 
-  try {
-    if (!isObjectId(id)) {
-      return res.status(403).json({
-        status: "fail",
-        message: "invalid directory id",
-      });
-    }
+//   try {
+//     if (!isObjectId(id)) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "invalid directory id",
+//       });
+//     }
 
-    const directory = await Fragments.findById(id);
+//     const directory = await Fragments.findById(id);
 
-    if (!directory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "no directory with the given id",
-      });
-    }
+//     if (!directory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "no directory with the given id",
+//       });
+//     }
 
-    if (!directory.isDirectory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "the given id is not a folder",
-      });
-    }
+//     if (!directory.isDirectory) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "the given id is not a folder",
+//       });
+//     }
 
-    if (files_ids.includes(directory._id.toString())) {
-      return res.status(403).json({
-        status: "fail",
-        message: "cannot add the same directory to itself !!",
-      });
-    }
+//     if (files_ids.includes(directory._id.toString())) {
+//       return res.status(403).json({
+//         status: "fail",
+//         message: "cannot add the same directory to itself !!",
+//       });
+//     }
 
-    if (files_ids.length)
-      await Promise.all(
-        files_ids.map(
-          async (fileId) =>
-            await Fragments.findOneAndUpdate(
-              { _id: fileId },
-              { directory: directory.id, updated_at: new Date() }
-            )
-        )
-      );
+//     if (files_ids.length)
+//       await Promise.all(
+//         files_ids.map(
+//           async (fileId) =>
+//             await Fragments.findOneAndUpdate(
+//               { _id: fileId },
+//               { directory: directory.id, updated_at: new Date() }
+//             )
+//         )
+//       );
 
-    res.status(200).json({
-      status: "success",
-      message: "files added successfully",
-      data: directory,
-    });
-  } catch (e) {
-    console.log({ error: e });
-    res.status(500).json({
-      success: false,
-      message: "something went wrong",
-    });
-  }
-};
+//     res.status(200).json({
+//       status: "success",
+//       message: "files added successfully",
+//       data: directory,
+//     });
+//   } catch (e) {
+//     console.log({ error: e });
+//     res.status(500).json({
+//       success: false,
+//       message: "something went wrong",
+//     });
+//   }
+// };
 
 const deleteFolderRecursivly = async (directory) => {
   if (!directory) {
