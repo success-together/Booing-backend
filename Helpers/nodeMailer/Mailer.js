@@ -2,21 +2,19 @@ const nodemailer = require("nodemailer");
 
 //step 1 mailer
 module.exports.sendMail = (to, subject, text, code) => {
-
   let transporter = nodemailer.createTransport({
-    
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
       user: process.env.ADMIN_EMAIL,
-      pass: process.env.PASSWORD_EMAIL || "zjevkrwmbxlpojdeq",
+      pass: process.env.PASSWORD_EMAIL || "oymchhoymebfczsv",
     },
   });
 
   // Step 2
   let mailOptions = {
-    from: 'booingcloud@gmail.com', // TODO: email sender
+    from: "booingcloud@gmail.com", // TODO: email sender
     to: to, // TODO: email receiver
     subject: subject,
     text: text,
@@ -290,6 +288,5 @@ module.exports.sendMail = (to, subject, text, code) => {
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) return { err };
     return info;
-
   });
 };
