@@ -93,6 +93,11 @@ const socialMediaSignup = async (req, res) => {
 
       // Save the New User into the Database
       await user.save().then(() => {
+
+        // CREATE NEW USER WALLET
+        const wallet = new Wallet({ user_id: user._id });
+        wallet.save();
+
         //Return success message and the user
         // let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
         // sendMail(email, " Confirm your email adress. ", text, code)
