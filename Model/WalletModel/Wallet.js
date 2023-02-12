@@ -14,6 +14,10 @@ const walletSchema = new Schema({
   transactions: {
     type: Array
   },
+  isSpaceSelled : {
+    type : Boolean,
+    default : false,
+  }
 });
 
 
