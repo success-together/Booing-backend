@@ -3,7 +3,7 @@ const Wallet = require("../../Model/WalletModel/Wallet");
 
 const getWallet = async (req, res) => {
   const user_id = req.params.id;
-  console.log(user_id)
+  console.log(user_id);
   await Wallet.findOne({ user_id: mongoose.Types.ObjectId(user_id) })
     .then((wallet) => {
       console.log(wallet);
@@ -17,10 +17,12 @@ const getWallet = async (req, res) => {
 };
 
 const walletTransaction = async (req, res) => {
-  const { isIncremenet, coins, user_id } = req.body;
+  const { isIncremenet, coins, user_id, isSpaceSelled } = req.body;
+  console.log(req.body)
   await Wallet.findOneAndUpdate(
     { user_id: user_id },
     {
+      isSpaceSelled: isSpaceSelled,
       $inc: { amount: isIncremenet ? coins : -coins },
       $push: {
         transactions: {
