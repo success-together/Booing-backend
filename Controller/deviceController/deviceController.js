@@ -31,13 +31,11 @@ const addDevice = async (req, res) => {
             .then((savedUser) => {
               console.log(savedUser);
               if (savedUser)
-                return res
-                  .status(200)
-                  .json({
-                    success: true,
-                    msg: "device created successfully",
-                    data: dev,
-                  });
+                return res.status(200).json({
+                  success: true,
+                  msg: "device created successfully",
+                  data: dev,
+                });
               else
                 return res
                   .status(400)
@@ -56,14 +54,36 @@ const addDevice = async (req, res) => {
       .catch((err) =>
         res.status(400).json({ success: false, msg: err?.message })
       );
-  } else
-    return res
-      .status(200)
-      .json({
+  } else if (isExistedDevice) {
+    console.log(isExistedDevice._id);
+    const checkDeviceInUserDevices = await User.findOne({
+      user_id,
+      devices: isExistedDevice._id,
+    });
+    if (!checkDeviceInUserDevices) {
+      await User.findOneAndUpdate(
+        { _id: user_id },
+        {
+          $push: { devices: isExistedDevice._id },
+        }
+      );
+      return res.status(200).json({
+        sucess: true,
+        msg: "Device already exists. Device has been successfully added to user devices.",
+        data: isExistedDevice,
+      });
+    } else {
+      return res.status(200).json({
         sucess: false,
         msg: "Device already exists",
         data: isExistedDevice,
       });
+    }
+  } else
+    return res.status(500).json({
+      sucess: false,
+      msg: "Error while addind device",
+    });
 };
 
 //Get Available Devices
@@ -84,17 +104,30 @@ const getDevices = async (req, res) => {
 const getUserDevices = async (req, res) => {
   try {
     const { user_id } = req.body;
-
+    let userDevices = [];
     if (!user_id)
       return res
         .status(400)
-        .json({ success: false, msg: "error while fetching devices" });
-    const devices = await Device.find({ user_id: user_id });
-    if (devices) {
-      console.log("devices : ", devices);
+        .json({
+          success: false,
+          msg: "error while fetching devices, no user_id found.",
+        });
+
+    const user = await User.findOne({ user_id });
+    if (!user)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "error while fetching devices, we can't find the user.",
+        });
+
+  
+      let dev = await Device.find({ _id: { $in: user.devices } });  
+    if (dev) {
       return res
         .status(200)
-        .json({ success: true, data: devices, msg: "sucess" });
+        .json({ success: true, data: dev, msg: "sucess" });
     }
     return res
       .status(400)
