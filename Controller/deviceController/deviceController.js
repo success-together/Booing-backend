@@ -57,9 +57,10 @@ const addDevice = async (req, res) => {
   } else if (isExistedDevice) {
     console.log(isExistedDevice._id);
     const checkDeviceInUserDevices = await User.findOne({
-      user_id,
+      _id: user_id,
       devices: isExistedDevice._id,
     });
+    console.log(checkDeviceInUserDevices);
     if (!checkDeviceInUserDevices) {
       await User.findOneAndUpdate(
         { _id: user_id },
