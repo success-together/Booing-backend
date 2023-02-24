@@ -95,9 +95,9 @@ const socketServer = {
 		const devices = [];
 		console.log(this.users)
 		for (const key in this.users) {
-			// if (this.users[key]['state'] === 'online') {
+			if (this.users[key]['state'] === 'online') {
 				devices.push({_id: key})
-			// }
+			}
 		}
 		return devices;
 	},
