@@ -65,6 +65,7 @@ const download = async (req, res) => {
       user_id: user_id,
       isDeleted: false,
       isDirectory: false,
+      category: type
     });
     if (fragments.length == 0)
       return res.status(400).json({ msg: "no fragment found", success: false });
@@ -76,38 +77,16 @@ const download = async (req, res) => {
     let base64 = [];
 
     fragments.forEach((item) => {
-      // result = false;
-      //   console.log("item file : ", item.updates[0].fileName);
-      if (!item.isDeleted) {
-        fileBase64 = "";
-        item.updates.forEach((update) => {
-          fileName = update.fileName.slice(
-            0,
-            update.fileName.lastIndexOf(".") - 1
-          );
-          extension = update.fileName.slice(
-            update.fileName.lastIndexOf(".") + 1,
-            update.fileName.length
-          );
-          fileBase64 = fileBase64 + update.fragment;
-        });
-
-        // * checking if file type exists in fragmenet colluction to return only needed files ...
-        if (types[type](item.type)) {
-          let elementToPush = "data:" + item.type + ";base64," + fileBase64;
-          base64.push({
-            uri: elementToPush,
-            id: item._id,
-            name: fileName + "." + extension,
-            createdAt: item.created_at,
-          });
-        }
-      }
-      //   result = downloadFile(fileBase64, extension, fileName);
-      // console.log({ ...base64.length, id: item._id });
+      base64.push({
+        uri: '',
+        updates: item.updates,
+        id: item._id,
+        name: item.filename,
+        type: item.type,
+        createdAt: item.created_at,
+      });
     });
-    // if (result) {
-    //   let uploadedFiles = await fs.readdirSync("./downloadedFiles");
+    console.log(base64)
     return res.status(200).json({
       msg: "file downloaded successfully",
       success: true,

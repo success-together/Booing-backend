@@ -6,7 +6,7 @@ const fileStorageEngine = multer.diskStorage({
         cb(null, "./uploadedFiles")
     },
     filename: (req, file, cb) => {
-        cb(null, req.params.user_id+"_"+file.originalname)
+        cb(null, file.originalname)
     },
 })
 const upload = multer({storage: fileStorageEngine})

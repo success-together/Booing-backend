@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-
+const { createServer } = require('http');
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -18,6 +18,8 @@ const deviceRoutes = require("./Routes/deviceRoutes/DeviceRoutes");
 const downloadRoutes = require("./Routes/downloadRouter/downloadRouter");
 const directoriesRoutes = require("./Routes/directoriesRoutes/directoriesRoutes");
 const walletRoutes = require('./Routes/walletRoutes/walletRoutes')
+
+const socketServer = require('./Middleware/Socket');
 
 //Dotenv configuration
 const dotenv = require("dotenv");
@@ -48,15 +50,20 @@ mongoose.connect(
   () => {
     console.log("Successufully connected to database .");
     const PORT = process.env.PORT || 3002;
-    app.listen(PORT, () => {
-      console.log(`Server is active on port ${PORT} .`);
+    const httpServer = createServer(app);
+    socketServer.init(httpServer);
+    const server = httpServer.listen(PORT, (sss) => {
+      console.log(`Express is running on port ${server.address().port}`);
     });
   }
 );
 
 app.use(cors(corsOptions));
 app.use(cors());
-
+app.use("*" , (req, res, next) => {
+  console.log('new request: ', req.baseUrl, req.body)
+  next();
+})
 app.use(express.json());
 app.use(cookieParser());
 

@@ -19,6 +19,15 @@ const fragmentsSchema = new Schema({
   type: {
     type: String,
   },
+  filename: {
+    type: String
+  },
+  category: {
+    type: String,
+  },
+  uid: {
+    type: String,
+  },
   isDeleted: {
     type: Boolean,
     default: false,

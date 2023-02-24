@@ -9,7 +9,6 @@ const createDirectory = async (req, res, next) => {
   if (!isObjectId(user_id)) {
     return res.status(401).json({
       success: false,
-      success: false,
       message: "you must be logged in !",
     });
   }
@@ -17,18 +16,11 @@ const createDirectory = async (req, res, next) => {
   if (!name || typeof name !== "string" || name.trim() === "") {
     return res.status(403).json({
       success: false,
-      success: false,
       message: "directory must have a name",
     });
   }
 
-ranch
-  // if (!isArray(filesIds)) {
-  //   return res.status(403).json({
-  //     success: false,
-  //     message: "filesIds must be an array",
-  //   });
-  // }
+
 
   try {
     const directory = new Fragments({
@@ -51,14 +43,12 @@ ranch
 
     res.status(200).json({
       success: true,
-      success: true,
       message: "directory has been created successfully !",
       data: directory,
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      success: false,
       success: false,
       message: "something went wrong",
     });
@@ -98,7 +88,6 @@ const getAllDirectories = async (req, res, next) => {
   if (!isObjectId(user_id)) {
     return res.status(401).json({
       success: false,
-      success: false,
       message: "you must be logged in !",
     });
   }
@@ -113,14 +102,12 @@ const getAllDirectories = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      success: true,
       message: "data returned successfully",
       data: directories.map((directory) => formatDirectory(directory)),
     });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
-      success: false,
       success: false,
       message: "something went wrong",
     });
@@ -134,7 +121,6 @@ const getDirectory = async (req, res, next) => {
   if (!isObjectId(user_id)) {
     return res.status(401).json({
       success: false,
-      success: false,
       message: "you must be logged in !",
     });
   }
@@ -142,7 +128,6 @@ const getDirectory = async (req, res, next) => {
   try {
     if (!isObjectId(id)) {
       return res.status(403).json({
-        success: false,
         success: false,
         message: "invalid directory id",
       });
@@ -152,10 +137,9 @@ const getDirectory = async (req, res, next) => {
 
     if (!directory) {
 
-
-
       return res.status(403).json({
         success: false,
+
         message: "no directory with the given id",
       });
     }
@@ -178,7 +162,6 @@ const getDirectory = async (req, res, next) => {
     await directory.save({ validateBeforeSave: true });
 
     res.status(200).json({
-      success: true,
       success: true,
       data: formatDirectory(directory, true),
     });

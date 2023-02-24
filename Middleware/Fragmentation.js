@@ -4,15 +4,19 @@ const { fields } = require("./UploadFile");
 const devices = require("../Controller/deviceController/deviceController");
 const Device = require("../Model/deviceModel/Device");
 const SendFragments = require("../Middleware/SendFragments");
-
+const socket = require('./Socket');
 const fragmentation = async (req, res) => {
   try {
     // Get connected user
     let user_id = req.params.user_id;
 
     // Get available devices
-    let availableDevices = await devices.getDevices();
-
+    // let allDevices = await devices.getDevices();
+    // let availableDevices = socket.checkDevices(allDevices);
+    let availableDevices = socket.getDevices();
+    console.log(availableDevices);
+    
+    // availableDevices.sort((a, b)=>{return Math.random()>0.5?1:-1})
     let noad = availableDevices?.length; // Number of availble devices
     console.log(
       "There are " + noad + " available devices : ",
@@ -20,7 +24,7 @@ const fragmentation = async (req, res) => {
     );
     // get files
     let files = req.files;
-
+    console.log(req.files)
     const filesData = await Promise.all(
       files?.map(async (file) => {
         console.log("file ", file);
@@ -28,6 +32,7 @@ const fragmentation = async (req, res) => {
         // Convert file to bytes (base64)
         let encodedFile64 = fs.readFileSync(file.path, { encoding: "base64" });
         let lengthFile64 = encodedFile64.length; //Number of bytes
+        console.log(lengthFile64)
         let sliceLength = Math.trunc(lengthFile64 / noad);
         let i = 0;
         let j = 0;
@@ -46,6 +51,7 @@ const fragmentation = async (req, res) => {
             fragmentID: j,
             fragment: fragment,
             fileName: file.filename,
+            uid: Date.now(),
             user_id: user_id,
             devices: [{ device_id: device_id }, { device_id: device_id }],
             isUploaded: false,
@@ -61,6 +67,7 @@ const fragmentation = async (req, res) => {
             fragmentID: j,
             fragment: encodedFile64,
             fileName: file.filename,
+            uid: Date.now(),
             user_id: user_id,
             devices: [{ device_id: device_id }, { device_id: device_id }],
             isUploaded: false,
@@ -76,15 +83,16 @@ const fragmentation = async (req, res) => {
 
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)
-
-        const id = await SendFragments(
+        // console.log(fragments.length, user_id, file.mimetype, file.size)        
+        const {_id, frag} = await SendFragments(
           fragments,
           user_id,
           file.mimetype,
-          file.size
+          file.size,
+          file.filename
         );
 
-        return { id, name: file.filename };
+        return { id: _id, name: file.filename, updates: frag };
       })
     );
 
