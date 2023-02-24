@@ -33,7 +33,7 @@ const fragmentation = async (req, res) => {
         let encodedFile64 = fs.readFileSync(file.path, { encoding: "base64" });
         let lengthFile64 = encodedFile64.length; //Number of bytes
         console.log(lengthFile64)
-        let sliceLength = Math.trunc((lengthFile64+10) / noad);
+        let sliceLength = Math.trunc((lengthFile64-10) / noad);
         let i = 0;
         let j = 0;
         let fragment = "";
