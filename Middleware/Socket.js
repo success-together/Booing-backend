@@ -41,20 +41,20 @@ const socketServer = {
 		    	// this.io.sockets.emit('newDevice', device_id)
 		    })
 		    socket.on('offer', (data) => {
-		        // console.log('offer: ', data.from, '->', data.to, this.users[data.to])
+		        console.log('offer: ', data.from, '->', data.to, this.users[data.to])
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('offer', {offer: data.offer, from: data.from, reqdata: data.reqdata})
 		    	}
 		    })
 
 		    socket.on('answer', (data) => {
-		        // console.log('answer', data.from, '->', data.to)
+		        console.log('answer', data.from, '->', data.to)
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('answer', {answer: data.answer, from: data.from})
 		    	}
 		    })
 		    socket.on('icecandidate', (data) => {
-		    	// console.log('icecandidate', data);
+		    	console.log('icecandidate', data);
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('icecandidate', {candidate: data.candidate, from: data.from, isOffer: data.isOffer})
 		    	}
