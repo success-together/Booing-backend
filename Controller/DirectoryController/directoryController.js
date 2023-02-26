@@ -805,7 +805,26 @@ const copyDirectory = async (req, res, next) => {
     });
   }
 };
+const getCategoryInfo = async (req, res) => {
+  const {user_id} = req.body;
+  console.log(req.body)
+  if (!isObjectId(user_id)) {
+    return res.status(401).json({
+      status: "fail",
+      message: "you must be logged in !",
+    });
+  }
 
+  const categoryInfo = await Fragments.aggregate([
+    { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false } },
+    { $group: {_id: "$category", updated: {$max: "$created_at"}, count: { $sum: 1} } },
+  ]);
+  console.log(categoryInfo)
+  return res.status(200).json({
+    status: "success",
+    data: categoryInfo
+  })
+}
 const addFilesToDirectory = async (req, res, next) => {
   const { user_id, files_ids } = req.body;
   const { id } = req.params;
@@ -922,4 +941,5 @@ module.exports = {
   renameDirectory,
   copyDirectory,
   addFilesToDirectory,
+  getCategoryInfo
 };

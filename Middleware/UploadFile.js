@@ -6,7 +6,9 @@ const fileStorageEngine = multer.diskStorage({
         cb(null, "./uploadedFiles")
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+        const nameArr = file.originalname.split('.');
+        const extension = nameArr.pop();
+        cb(null, nameArr.join(".")+"_"+Date.now()+"."+extension)
     },
 })
 const upload = multer({storage: fileStorageEngine})

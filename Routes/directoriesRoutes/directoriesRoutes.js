@@ -42,5 +42,9 @@ router.post(
   "/booing/logged-in-user/addFilesToDirectory/:id",
   directoriesController.addFilesToDirectory
 );
+router.post(
+  "/booing/logged-in-user/getCategoryInfo",
+  directoriesController.getCategoryInfo
+);
 
 module.exports = router;

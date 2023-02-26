@@ -44,6 +44,8 @@ const socketServer = {
 		        // console.log('offer: ', data.from, '->', data.to, this.users[data.to])
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('offer', {offer: data.offer, from: data.from, reqdata: data.reqdata})
+		    	} else {
+		    		this.io.to(this.users[data.from]['id']).emit('offline', {to: data.to})
 		    	}
 		    })
 
@@ -86,6 +88,9 @@ const socketServer = {
 			const filename = fragments[i]['fragmentID']+"_"+fragments[i]['fileName']+"_"+fragments[i]['user_id']
 			// console.log(filename, this.users[fragments[i]['devices'][0]['device_id']]['id'])
 			this.io.to(this.users[fragments[i]['devices'][0]['device_id']]['id']).emit('sendingData', fragments[i])
+			if (fragments[i]['devices'].length > 1) {
+				this.io.to(this.users[fragments[i]['devices'][1]['device_id']]['id']).emit('sendingData', fragments[i])
+			}
 		}
 		return true;
 		//TO DO
