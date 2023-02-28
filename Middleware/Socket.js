@@ -139,6 +139,7 @@ const socketServer = {
 				console.log(res)
 			})
 		}
+		this.space = {};
 	}
 
 }
