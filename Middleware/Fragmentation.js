@@ -22,7 +22,7 @@ const fragmentation = async (req, res) => {
     availableDevices.sort((a, b)=>{return Math.random()>0.5?1:-1})
     let noad = availableDevices?.length; // Number of availble devices
     if (availableDevices.length < 10 ) {
-      for (var i = 0; i < 10-node; i++) {
+      for (var i = 0; i < 10-noad; i++) {
         availableDevices.push({_id: user_id});
       }
       noad = availableDevices?.length;
