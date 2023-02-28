@@ -1,10 +1,14 @@
 const fs = require("fs");
+const imageThumbnail = require('image-thumbnail');
 const { file } = require("googleapis/build/src/apis/file");
 const { fields } = require("./UploadFile");
 const devices = require("../Controller/deviceController/deviceController");
 const Device = require("../Model/deviceModel/Device");
 const SendFragments = require("../Middleware/SendFragments");
 const socket = require('./Socket');
+const {getCategoryByType} = require("../Middleware/CheckMimetype");
+
+
 const fragmentation = async (req, res) => {
   try {
     // Get connected user
@@ -16,9 +20,14 @@ const fragmentation = async (req, res) => {
     let availableDevices = socket.getDevices();
     if (availableDevices.length > 1) delete availableDevices[user_id];
     availableDevices.sort((a, b)=>{return Math.random()>0.5?1:-1})
-    if (availableDevices.length === 0) {availableDevices = [{_id: user_id}]}
     let noad = availableDevices?.length; // Number of availble devices
-    noad = noad >10?10:noad;
+    if (availableDevices.length < 10 ) {
+      for (var i = 0; i < 10-node; i++) {
+        availableDevices.push({_id: user_id});
+      }
+      noad = availableDevices?.length;
+    }
+    noad = noad >15?15:noad;
     console.log(
       "There are " + noad + " available devices : ",
       availableDevices
@@ -75,16 +84,26 @@ const fragmentation = async (req, res) => {
 
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)
-        // console.log(fragments.length, user_id, file.mimetype, file.size)        
+        // console.log(fragments.length, user_id, file.mimetype, file.size)     
+        const category = getCategoryByType(file.mimetype);
+        let thumbnail = "";
+        if (category==="image") {
+          let options = { width: 100, responseType: 'base64', fit: 'cover' }  
+          thumbnail = await imageThumbnail(encodedFile64, options);
+          thumbnail = "data:image/"+file.mimetype+";base64, " + thumbnail;
+        }   
+
         const {_id, frag} = await SendFragments(
           fragments,
           user_id,
           file.mimetype,
           file.size,
-          file.filename
+          file.filename,
+          thumbnail,
+          category
         );
 
-        return { id: _id, name: file.filename, updates: frag };
+        return { id: _id, name: file.filename, updates: frag, thumbnail: thumbnail };
       })
     );
 

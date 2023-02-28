@@ -82,11 +82,11 @@ const download = async (req, res) => {
         updates: item.updates,
         id: item._id,
         name: item.filename,
+        thumbnail: item.thumbnail,
         type: item.type,
         createdAt: item.created_at,
       });
     });
-    console.log(base64)
     return res.status(200).json({
       msg: "file downloaded successfully",
       success: true,
@@ -98,5 +98,13 @@ const download = async (req, res) => {
     return res.status(400).json({ msg: err?.message, success: false });
   }
 };
-
-module.exports = { download };
+const downloadByOffer = async (req, res) => {
+  const {filename} = req.params;
+  let encodedFile64 = fs.readFileSync(__dirname + '/../../uploadedFiles/'+filename, { encoding: "base64" });
+  console.log(encodedFile64.length)
+  return res.status(200).json({
+    success: true,
+    data: encodedFile64
+  })
+}
+module.exports = { download, downloadByOffer };

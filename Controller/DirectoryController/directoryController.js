@@ -72,10 +72,10 @@ const formatDirectory = (directory, extendedItems) => {
                 createdAt: subDirectory._doc.created_at,
                 isDirectory: false,
                 type: subDirectory._doc.type,
-                uri: subDirectory._doc.updates.reduce(
-                  (acc, update) => acc + update.fragment,
-                  `data:${subDirectory._doc.type};base64,`
-                ),
+                uri: '',
+                thumbnail: subDirectory._doc.thumbnail,
+                updates: subDirectory._doc.updates,
+                category: subDirectory._doc.category
               }
         )
       : directory._doc.items.length,
@@ -807,7 +807,6 @@ const copyDirectory = async (req, res, next) => {
 };
 const getCategoryInfo = async (req, res) => {
   const {user_id} = req.body;
-  console.log(req.body)
   if (!isObjectId(user_id)) {
     return res.status(401).json({
       status: "fail",
@@ -819,7 +818,6 @@ const getCategoryInfo = async (req, res) => {
     { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false } },
     { $group: {_id: "$category", updated: {$max: "$created_at"}, count: { $sum: 1} } },
   ]);
-  console.log(categoryInfo)
   return res.status(200).json({
     status: "success",
     data: categoryInfo

@@ -1,16 +1,15 @@
 const Fragments = require("../Model/fragmentsModel/Fragments");
-const {getCategoryByType} = require("../Middleware/CheckMimetype");
 const socket = require('./Socket');
-const SendFragments = async (newFrags, user_id, type, size, filename) => {
+const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail, category) => {
   // try {
     if (newFrags && user_id && type && size) {
       // console.log("Fragments to send : ",newFrags);
-      const category = getCategoryByType(type);
       const frag = newFrags.map((ele)=>{return {...ele, fragment: ''}})
       console.log(newFrags.length)
       const Frags = new Fragments({
         updates: frag,
         user_id: user_id,
+        thumbnail: thumbnail,
         type: type, //dont need
         size: size,
         filename: filename,

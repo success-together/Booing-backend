@@ -22,6 +22,9 @@ const fragmentsSchema = new Schema({
   filename: {
     type: String
   },
+  thumbnail: {
+    type: String
+  },
   category: {
     type: String,
   },

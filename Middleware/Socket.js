@@ -1,4 +1,7 @@
 const { Server } = require('socket.io');
+const ss = require('socket.io-stream');
+const stream = ss.createStream();
+
 const socketServer = {
 	init: function(server) {
 		this.io = new Server(server, {
@@ -61,6 +64,13 @@ const socketServer = {
 			        this.io.to(this.users[data.to]['id']).emit('icecandidate', {candidate: data.candidate, from: data.from, isOffer: data.isOffer})
 		    	}
 		    })
+		    socket.on('recreateOffer', (data) => {
+		    	console.log(data)
+		    	// const stream = ss.createStream();
+				this.io.to(this.users[data.from]['id']).emit('recreateOfferAnswer', {filename: data.filename});
+				// fs.createReadStream(__dirname + '/../uploadFiles/' + data.filename).pipe(stream);
+		    });
+
 		    socket.on('disconnect', (err)=>{
 		    	console.log('disconnect', err)
 		    	if (this.users[socket.user_id]) {

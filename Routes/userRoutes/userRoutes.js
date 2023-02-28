@@ -3,6 +3,9 @@ const route = Router();
 const userController = require('../../Controller/userController/userController')
 const Authentification = require('../../Middleware/Authentification')
 
+const fs = require("fs");
+const path = require('path');
+
 // Signup route
 route.post('/booing/signup', userController.signup)
 // Social Media Signup route
@@ -23,10 +26,8 @@ route.post('/booing/logged-in-user/updatePassword',
 route.post('/booing/forgotPassword', userController.forgotPassword)
 
 i=0
-route.get('/', (req, res) => {
-
+route.get('/', async (req, res) => {
    res.send("hello")
-   
 })
 
 

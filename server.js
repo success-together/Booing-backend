@@ -64,6 +64,10 @@ app.use("*" , (req, res, next) => {
   console.log('new request: ', req.baseUrl, req.body)
   next();
 })
+// app.get("/files/:filename", function(req, res){
+//     res.sendFile(path.join(__dirname, 'uploadedFiles') + "/" + req.params.filename);
+// });
+app.use("/files", express.static(path.join(__dirname, "uploadedFiles")));
 app.use(express.json());
 app.use(cookieParser());
 

@@ -19,6 +19,7 @@ route.get(
   downloadController.download
 );
 
+route.post("/booing/logged-in-user/downloadByOffer/:filename", downloadController.downloadByOffer);
 // route.post("/booing/logged-in-user/checkForDownloads", checkForDownloads);
 // route.post("/booing/logged-in-user/checkForUploads", checkForUploads);
 // route.post("/booing/logged-in-user/uploadFragments", uploadFragments);

@@ -6,14 +6,6 @@ const isObjectId = require("../../Helpers/isObjectId");
 const getUsedStorage = async (req, res) => {
   const { user_id } = req.params;
   try {
-    await Fragments.find({ user_id: user_id }, { updates: 0 })
-      .then((res) => {
-        console.log(res);
-        // return res.status(200).json(res);
-      })
-      .catch((err) => {
-        return res.status(500).json({ msg: err?.message, success: false });
-      });
     const usedStorage = await Fragments.aggregate([
       { $match: { user_id: mongoose.Types.ObjectId(user_id) } },
       { $group: { _id: null, total: { $sum: "$size" } } },
