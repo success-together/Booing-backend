@@ -23,7 +23,7 @@ const fragmentation = async (req, res) => {
     let noad = availableDevices?.length; // Number of availble devices
     while(availableDevices.length < 10) {  //device id copy
       for (var i = 0; i < noad; i++) {
-        availableDevices.push(availableDevices[noad]);
+        availableDevices.push(availableDevices[i]);
       }
     }
     noad = availableDevices?.length;
