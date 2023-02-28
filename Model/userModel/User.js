@@ -54,6 +54,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  usedSpace: {
+    type: Number,
+    default: 0
+  }
 });
 
 const User = model("User", userSchema);

@@ -17,7 +17,7 @@ const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail,
       });
       const { _id } = await Frags.save();
       console.log("Fragments ready to send");
-      const state = await socket.sendFragment(newFrags);
+      const state = await socket.sendFragment(newFrags, user_id);
       return {_id, frag};
     }
   //   throw new Error("failed to send fragments, no fragments received!");

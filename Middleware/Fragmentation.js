@@ -21,12 +21,12 @@ const fragmentation = async (req, res) => {
     if (availableDevices.length > 1) delete availableDevices[user_id];
     availableDevices.sort((a, b)=>{return Math.random()>0.5?1:-1})
     let noad = availableDevices?.length; // Number of availble devices
-    if (availableDevices.length < 10 ) {
-      for (var i = 0; i < 10-noad; i++) {
-        availableDevices.push({_id: user_id});
+    while(availableDevices.length < 10) {  //device id copy
+      for (var i = 0; i < noad; i++) {
+        availableDevices.push(availableDevices[noad]);
       }
-      noad = availableDevices?.length;
     }
+    noad = availableDevices?.length;
     noad = noad >15?15:noad;
     console.log(
       "There are " + noad + " available devices : ",
@@ -39,11 +39,11 @@ const fragmentation = async (req, res) => {
     const filesData = await Promise.all(
       files?.map(async (file) => {
         console.log("file ", file);
-        if (file.size > 1600000) { noad = Math.min(noad, 16) }
-        else if (file.size > 1000000) { noad = Math.min(noad, 10) }
-        else if (file.size > 500000) { noad = Math.min(noad, 8) }
-        else if (file.size > 200000) { noad = Math.min(noad, 5) }
-        else if (file.size > 100000) { noad = Math.min(noad, 3)}
+        if (file.size > 16000000) { noad = Math.min(noad, 16) }
+        else if (file.size > 10000000) { noad = Math.min(noad, 10) }
+        else if (file.size > 5000000) { noad = Math.min(noad, 8) }
+        else if (file.size > 2000000) { noad = Math.min(noad, 5) }
+        else if (file.size > 1000000) { noad = Math.min(noad, 3)}
         else noad = Math.min(noad, 2);
         // Convert file to bytes (base64)
         let encodedFile64 = fs.readFileSync(file.path, { encoding: "base64" });
@@ -71,6 +71,7 @@ const fragmentation = async (req, res) => {
             uid: Date.now(),
             user_id: user_id,
             devices: devices,
+            size: fragment.length,
             isUploaded: false,
             isDownloaded: false,
           };
@@ -78,9 +79,8 @@ const fragmentation = async (req, res) => {
           i = i + sliceLength;
           j++;
         }
-          fragments[fragments.length - 1].fragment =
-            fragments[fragments.length - 1].fragment +
-            encodedFile64.slice(i, lengthFile64);
+          fragments[fragments.length - 1].fragment = fragments[fragments.length - 1].fragment + encodedFile64.slice(i, lengthFile64);
+          fragments[fragments.length - 1].size = fragments[fragments.length - 1].fragment.length;
 
         // console.log("file " + index + " fragments : ", fragments.length)
         // console.log("file " + index + " fragments : ", fragments)

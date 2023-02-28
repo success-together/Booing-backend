@@ -1,4 +1,5 @@
 const Fragments = require("../../Model/fragmentsModel/Fragments");
+const User = require('../../Model/userModel/User');
 const mongoose = require("mongoose");
 const isArray = require("../../Helpers/isArray");
 const isObjectId = require("../../Helpers/isObjectId");
@@ -6,12 +7,14 @@ const isObjectId = require("../../Helpers/isObjectId");
 const getUsedStorage = async (req, res) => {
   const { user_id } = req.params;
   try {
-    const usedStorage = await Fragments.aggregate([
-      { $match: { user_id: mongoose.Types.ObjectId(user_id) } },
-      { $group: { _id: null, total: { $sum: "$size" } } },
-    ]);
-    if (usedStorage)
-      return res.status(200).json({ success: true, data: usedStorage });
+    // const usedStorage = await Fragments.aggregate([
+    //   { $match: { user_id: mongoose.Types.ObjectId(user_id) } },
+    //   { $group: { _id: null, total: { $sum: "$size" } } },
+    // ]);
+    const user = await User.findOne({ _id: mongoose.Types.ObjectId(user_id) });
+    console.log(user)
+    // if (user)
+    return res.status(200).json({ success: true, data: [{total: user.usedSpace}] });
 
     return res.status(400).json({ success: false, mssg: "error" });
   } catch (err) {
@@ -173,8 +176,20 @@ const deleteFilesPermanently = async (req, res) => {
         message: "you dont have permission to delete these files",
       });
     }
+    let space = {};
+    await Promise.all(files.map((file) => {
+      for (var i = 0; i < file['updates'].length; i++) {
+        if (space[file['updates'][i]['devices'][0]['device_id']]) space[file['updates'][i]['devices'][0]['device_id']] += file['updates'][i].size;
+        else space[file['updates'][i]['devices'][0]['device_id']] = file['updates'][i].size;            
+      }
+      return file.delete();
+    }));
 
-    await Promise.all(files.map((file) => file.delete()));
+    for (let key in space) {
+      User.updateOne({_id: key}, {$inc:{usedSpace: (space[key]*-1)}}).then(res => {
+        console.log(res)
+      })      
+    }
     return res.status(200).json({
       status: "success",
       message: "files delete successfully",

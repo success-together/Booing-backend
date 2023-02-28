@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const ss = require('socket.io-stream');
 const stream = ss.createStream();
-
+const User = require('../Model/userModel/User');
 const socketServer = {
 	init: function(server) {
 		this.io = new Server(server, {
@@ -11,6 +11,7 @@ const socketServer = {
 			}
 		});
 		this.devices = {};
+		this.space = {};
 		this.users = {};
 		this.io.on('connection', socket => { 
 			socket.on('webConnect', (data) => {
@@ -92,16 +93,23 @@ const socketServer = {
 		    })
 		})
 	},
-	sendFragment: function(fragments) {
+	sendFragment: function(fragments, user_id) {
 		console.log(fragments.length);
 		for (var i = 0; i < fragments.length; i++) {
 			const filename = fragments[i]['fragmentID']+"_"+fragments[i]['fileName']+"_"+fragments[i]['user_id']
 			// console.log(filename, this.users[fragments[i]['devices'][0]['device_id']]['id'])
 			this.io.to(this.users[fragments[i]['devices'][0]['device_id']]['id']).emit('sendingData', fragments[i])
+			if (this.space[fragments[i]['devices'][0]['device_id']]) this.space[fragments[i]['devices'][0]['device_id']] += fragments[i]['fragment'].length;
+			else this.space[fragments[i]['devices'][0]['device_id']] = fragments[i]['fragment'].length;
 			if (fragments[i]['devices'].length > 1) {
 				this.io.to(this.users[fragments[i]['devices'][1]['device_id']]['id']).emit('sendingData', fragments[i])
+				// if (fragments[i]['devices'][1]['device_id'] !== user_id) {
+				// 	if (this.space[fragments[i]['devices'][1]['device_id']]) this.space[fragments[i]['devices'][1]['device_id']] += fragments[i]['fragment'].length;
+				// 	else this.space[fragments[i]['devices'][1]['device_id']] = fragments[i]['fragment'].length;
+				// }
 			}
 		}
+		this.saveSpace();
 		return true;
 		//TO DO
 		//send fragment to each device.
@@ -124,6 +132,13 @@ const socketServer = {
 	},
 	getRandomId: function() {
 		return Math.random().toString(36).substring(2,7);
+	},
+	saveSpace: function() {
+		for (let key in this.space) {
+			User.updateOne({_id: key}, {$inc:{usedSpace: this.space[key]}}).then(res => {
+				console.log(res)
+			})
+		}
 	}
 
 }
