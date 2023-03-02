@@ -48,7 +48,7 @@ const signup = async (req, res) => {
     // CREATE NEW USER WALLET
     const wallet = new Wallet({ user_id: savedUser._id });
     await wallet.save();
-
+    console.log(user)
     return res.status(200).json({
       msg: "Code sent succussefuly, check your email .",
       success: true,

@@ -7,14 +7,20 @@ const isObjectId = require("../../Helpers/isObjectId");
 const getUsedStorage = async (req, res) => {
   const { user_id } = req.params;
   try {
-    // const usedStorage = await Fragments.aggregate([
+    // const myCloud = await Fragments.aggregate([
     //   { $match: { user_id: mongoose.Types.ObjectId(user_id) } },
     //   { $group: { _id: null, total: { $sum: "$size" } } },
     // ]);
     const user = await User.findOne({ _id: mongoose.Types.ObjectId(user_id) });
-    console.log(user)
-    // if (user)
-    return res.status(200).json({ success: true, data: [{total: user.usedSpace}] });
+    return res.status(200).json({ 
+      success: true, 
+      data: {
+        occupyCloudTotal: user.occupy_cloud,
+        occupyCloud: user.used_occupycloud,
+        myCloudTotal: user.my_cloud,
+        myCloud: user.used_mycloud
+      } 
+    });
 
     return res.status(400).json({ success: false, mssg: "error" });
   } catch (err) {
@@ -177,19 +183,22 @@ const deleteFilesPermanently = async (req, res) => {
       });
     }
     let space = {};
+    let mySpace = 0;
     await Promise.all(files.map((file) => {
+      mySpace += file.size*1;
       for (var i = 0; i < file['updates'].length; i++) {
-        if (space[file['updates'][i]['devices'][0]['device_id']]) space[file['updates'][i]['devices'][0]['device_id']] += file['updates'][i].size;
-        else space[file['updates'][i]['devices'][0]['device_id']] = file['updates'][i].size;            
+        for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
+          if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
+          else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;            
+        }
       }
       return file.delete();
     }));
 
     for (let key in space) {
-      User.updateOne({_id: key}, {$inc:{usedSpace: (space[key]*-1)}}).then(res => {
-        console.log(res)
-      })      
+      await User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: (space[key]*-1)}});
     }
+    await User.findOneAndUpdate({_id: user_id}, {$inc:{used_mycloud: (mySpace*-1)}});
     return res.status(200).json({
       status: "success",
       message: "files delete successfully",
