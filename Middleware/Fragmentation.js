@@ -13,19 +13,18 @@ const fragmentation = async (req, res) => {
   try {
     // Get connected user
     let user_id = req.params.user_id;
-
-    // Get available devices
-    // let allDevices = await devices.getDevices();
-    // let availableDevices = socket.checkDevices(allDevices);
     let availableDevices = await devices.getAvailableDevices(user_id);
+
+    //for testing, manually add devices.
     if (availableDevices.length > 1) delete availableDevices[user_id];
-    availableDevices.sort((a, b)=>{return Math.random()>0.5?1:-1})
     let noad = availableDevices?.length; // Number of availble devices
     while(availableDevices.length < 100) {  //device id copy
       for (var i = 0; i < noad; i++) {
         availableDevices.push(availableDevices[i]);
       }
     }
+    //end
+
     noad = availableDevices?.length;
     let zone = Math.floor(noad/7);
     console.log(

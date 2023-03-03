@@ -101,6 +101,8 @@ const addDevice = async (req, res) => {
 const getAvailableDevices = async (user_id) => {
   const user = await User.findOne({_id: user_id});
   console.log(user)
+  const lat = user['lat']?user['lat']:1;
+  const lon = user['lon']?user['lon']:1;
   const users = await User.aggregate([   
     {$sort:{_id:-1}}, 
     {
@@ -108,16 +110,26 @@ const getAvailableDevices = async (user_id) => {
         coord: [
           {$convert:{input:"$lat", to:"double"}}, 
           {$convert:{input:"$lon", to:"double"}}
-        ]     
+        ],
+        cond: { $function:
+           {
+              body: function(my, used) {
+                 return used/(my*1000000000) < 0.9; //10% available devices.
+              },
+              args: [ "$my_cloud", "$used_mycloud"],
+              lang: "js"
+           }
+        }            
       }   
     },   
     {
       $match:{
         //is online check
         is_online: true,
+        cond: true,
         coord: {       
           $geoWithin: { 
-            $center: [[ user['lat'], user['lon'] ], 1000] 
+            $center: [[ lat, lon ], 9999999] 
           }    
         }   
       }   
