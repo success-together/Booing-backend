@@ -89,9 +89,11 @@ const socketServer = {
 			const filename = fragments[i]['fragmentID']+"_"+fragments[i]['fileName']+"_"+fragments[i]['user_id']
 			for (var j = 0; j < fragments[i]['devices'].length; j++) {
 				console.log(fragments[i]['devices'][j]['device_id'])
-				this.io.to(this.users[fragments[i]['devices'][j]['device_id']]['id']).emit('sendingData', fragments[i])
-				if (this.space[fragments[i]['devices'][j]['device_id']]) this.space[fragments[i]['devices'][j]['device_id']] += fragments[i]['fragment'].length;
-				else this.space[fragments[i]['devices'][j]['device_id']] = fragments[i]['fragment'].length;
+				if (this.users[fragments[i]['devices'][j]['device_id']]['id']) {
+					this.io.to(this.users[fragments[i]['devices'][j]['device_id']]['id']).emit('sendingData', fragments[i])
+					if (this.space[fragments[i]['devices'][j]['device_id']]) this.space[fragments[i]['devices'][j]['device_id']] += fragments[i]['fragment'].length;
+					else this.space[fragments[i]['devices'][j]['device_id']] = fragments[i]['fragment'].length;
+				}
 			}
 		}
 		this.saveSpace();

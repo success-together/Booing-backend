@@ -110,23 +110,13 @@ const getAvailableDevices = async (user_id) => {
         coord: [
           {$convert:{input:"$lat", to:"double"}}, 
           {$convert:{input:"$lon", to:"double"}}
-        ],
-        cond: { $function:
-           {
-              body: function(my, used) {
-                 return used/(my*1000000000) < 0.9; //10% available devices.
-              },
-              args: [ "$my_cloud", "$used_mycloud"],
-              lang: "js"
-           }
-        }            
+        ]           
       }   
     },   
     {
       $match:{
         //is online check
         is_online: true,
-        cond: true,
         coord: {       
           $geoWithin: { 
             $center: [[ lat, lon ], 9999999] 
@@ -136,11 +126,19 @@ const getAvailableDevices = async (user_id) => {
     },
     { $project: {
         _id: 1,
-        coord: 1
+        coord: 1,
+        my_cloud: 1,
+        used_mycloud: 1
     }},
   ])
-  console.log('Available: ', users)
-  return users;
+  let availableList = [];
+  for (var i = 0; i < users.length; i++) {
+    if (users[i]['used_mycloud']/(users[i]['my_cloud']*1000000000) < 0.9) {
+      availableList.push(users[i]);
+    }
+  }
+  console.log('Available: ', availableList)
+  return availableList;
 }
 
 //Get Available Devices
