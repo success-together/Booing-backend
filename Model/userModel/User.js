@@ -50,6 +50,7 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
+  size: { type: Number, default: 0 },
   accountVerified: { type: Boolean, default: false },
   occupy_cloud: { type: Number, default: 1 },
   used_occupycloud: { type: Number, default: 0 },
