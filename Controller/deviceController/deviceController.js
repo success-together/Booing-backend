@@ -133,7 +133,7 @@ const getAvailableDevices = async (user_id) => {
   ])
   let availableList = [];
   for (var i = 0; i < users.length; i++) {
-    if (users[i]['used_occupycloud']/(users[i]'occupy_cloud']*1000000000) < 0.9) {
+    if (users[i]['used_occupycloud']/(users[i]['occupy_cloud']*1000000000) < 0.9) {
       availableList.push(users[i]);
     }
   }
