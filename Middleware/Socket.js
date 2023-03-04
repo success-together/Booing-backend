@@ -85,19 +85,19 @@ const socketServer = {
 	},
 	sendFragment: function(fragments, user_id) {
 		console.log(this.users, user_id);
+		let totalSpace = {};
 		for (var i = 0; i < fragments.length; i++) {
 			const filename = fragments[i]['fragmentID']+"_"+fragments[i]['fileName']+"_"+fragments[i]['user_id']
 			for (var j = 0; j < fragments[i]['devices'].length; j++) {
 				console.log(fragments[i]['devices'][j]['device_id'])
 				if (this.users[fragments[i]['devices'][j]['device_id']]['id']) {
 					this.io.to(this.users[fragments[i]['devices'][j]['device_id']]['id']).emit('sendingData', fragments[i])
-					if (this.space[fragments[i]['devices'][j]['device_id']]) this.space[fragments[i]['devices'][j]['device_id']] += fragments[i]['fragment'].length;
-					else this.space[fragments[i]['devices'][j]['device_id']] = fragments[i]['fragment'].length;
+					if (totalSpace[fragments[i]['devices'][j]['device_id']]) totalSpace[fragments[i]['devices'][j]['device_id']] += fragments[i]['fragment'].length;
+					else totalSpace[fragments[i]['devices'][j]['device_id']] = fragments[i]['fragment'].length;
 				}
 			}
 		}
-		this.saveSpace();
-		return true;
+		return totalSpace;
 		//TO DO
 		//send fragment to each device.
 	},
@@ -120,16 +120,6 @@ const socketServer = {
 	getRandomId: function() {
 		return Math.random().toString(36).substring(2,7);
 	},
-	saveSpace: function() {
-		console.log(this.space)
-		for (let key in this.space) {
-			User.updateOne({_id: key}, {$inc:{used_occupycloud: this.space[key]}}).then(res => {
-				console.log(true)
-			})
-		}
-		this.space = {};
-	}
-
 }
 
 const users={}

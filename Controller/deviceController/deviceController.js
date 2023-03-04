@@ -127,13 +127,13 @@ const getAvailableDevices = async (user_id) => {
     { $project: {
         _id: 1,
         coord: 1,
-        my_cloud: 1,
-        used_mycloud: 1
+        occupy_cloud: 1,
+        used_occupycloud: 1
     }},
   ])
   let availableList = [];
   for (var i = 0; i < users.length; i++) {
-    if (users[i]['used_mycloud']/(users[i]['my_cloud']*1000000000) < 0.9) {
+    if (users[i]['used_occupycloud']/(users[i]'occupy_cloud']*1000000000) < 0.9) {
       availableList.push(users[i]);
     }
   }
