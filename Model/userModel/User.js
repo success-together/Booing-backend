@@ -56,8 +56,8 @@ const userSchema = new Schema({
   used_occupycloud: { type: Number, default: 0 },
   my_cloud: { type: Number, default: 1 },
   used_mycloud: { type: Number, default: 0 },
-  lat: { type: Number },
-  lon: { type: Number },
+  lat: { type: Number, default: 1 },
+  lon: { type: Number, default: 1 },
   divice_ref: {type: String},
   is_online: {type: Boolean, default: false},
 });
