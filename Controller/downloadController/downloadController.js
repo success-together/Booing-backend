@@ -84,6 +84,7 @@ const download = async (req, res) => {
         name: item.filename,
         thumbnail: item.thumbnail,
         type: item.type,
+        category: item.category,
         createdAt: item.created_at,
       });
     });

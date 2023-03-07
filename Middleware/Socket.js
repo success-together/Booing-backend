@@ -6,6 +6,8 @@ const socketServer = {
 	init: function(server) {
 		this.io = new Server(server, {
 			maxHttpBufferSize: 1e8, //100MB
+			pingInterval: 25000,
+			pingTimeout: 60000,
 			cors: {
 				origin: "*"
 			}
@@ -113,10 +115,9 @@ const socketServer = {
 		return devices;
 	},
 	deleteFileFromDevices: function(obj) {
-		console.log(obj)
-		for (let id of obj) {
-			if (this.users[id]['state'] === 'online') {
-				this.io.to(this.users[id]).send('deleteFile', {list: obj[id]})
+		for (let id in obj) {
+			if (this.users[id]?.state === 'online') {
+				this.io.to(this.users[id]['id']).emit('deleteFile', {list: obj[id]})
 			} else {
 				if (this.deleteFile[id]) {
 					this.deleteFile[id] = [...this.deleteFile[id], ...obj[id]];

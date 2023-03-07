@@ -191,8 +191,8 @@ const deleteFilesPermanently = async (req, res) => {
         for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
           if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
           else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;
-          if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push(file['updates'][i]['devices'][j]['device_id']:{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category});
-          else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [file['updates'][i]['devices'][j]['device_id']:{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category}];
+          if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push(`${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`);
+          else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [`${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`];
         }
       }
       return file.delete();
@@ -279,33 +279,17 @@ const getDeletedFiles = async (req, res) => {
           let base64 = [];
 
           fragments.forEach((item) => {
-            // result = false;
-            //   console.log("item file : ", item.updates[0].fileName);
-            fileBase64 = "";
-            item.updates.forEach((update) => {
-              fileName = update.fileName.slice(
-                0,
-                update.fileName.lastIndexOf(".") - 1
-              );
-              extension = update.fileName.slice(
-                update.fileName.lastIndexOf(".") + 1,
-                update.fileName.length
-              );
-              fileBase64 = fileBase64 + update.fragment;
-            });
-
-            let elementToPush = "data:" + item.type + ";base64," + fileBase64;
             base64.push({
-              uri: elementToPush,
+              uri: '',
+              updates: item.updates,
               id: item._id,
-              name: fileName + "." + extension,
+              name: item.filename,
+              thumbnail: item.thumbnail,
+              type: item.type,
+              category: item.category,
+              createdAt: item.created_at,
             });
-
-            //   result = downloadFile(fileBase64, extension, fileName);
-            // console.log({ ...base64.length, id: item._id });
           });
-          // if (result) {
-          //   let uploadedFiles = await fs.readdirSync("./downloadedFiles");
           return res.status(200).json({
             msg: "file downloaded successfully",
             success: true,
