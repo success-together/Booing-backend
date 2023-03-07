@@ -191,8 +191,8 @@ const deleteFilesPermanently = async (req, res) => {
         for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
           if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
           else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;
-          if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push({filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category});
-          else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category}];
+          if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push(file['updates'][i]['devices'][j]['device_id']:{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category});
+          else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [file['updates'][i]['devices'][j]['device_id']:{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category}];
         }
       }
       return file.delete();

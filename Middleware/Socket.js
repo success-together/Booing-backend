@@ -113,6 +113,7 @@ const socketServer = {
 		return devices;
 	},
 	deleteFileFromDevices: function(obj) {
+		console.log(obj)
 		for (let id of obj) {
 			if (this.users[id]['state'] === 'online') {
 				this.io.to(this.users[id]).send('deleteFile', {list: obj[id]})
