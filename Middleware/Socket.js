@@ -13,6 +13,7 @@ const socketServer = {
 		this.devices = {};
 		this.space = {};
 		this.users = {};
+		this.deleteFile = {};
 		this.io.on('connection', socket => { 
 			socket.on('webConnect', (data) => { //for testing in web browser
 				let randomId = this.getRandomId();
@@ -104,22 +105,26 @@ const socketServer = {
 	getDevices: function() {
 		const devices = [];
 		console.log(this.users)
-		for (const key in this.users) {
+		for (let key in this.users) {
 			if (this.users[key]['state'] === 'online') {
 				devices.push({_id: key})
 			}
 		}
 		return devices;
 	},
-	checkDevice: function(devices) {
-		console.log(devices);
-		//TO DO 
-		//check device is online or not
-		return devices;
-	},
-	getRandomId: function() {
-		return Math.random().toString(36).substring(2,7);
-	},
+	deleteFileFromDevices: function(obj) {
+		for (let id of obj) {
+			if (this.users[id]['state'] === 'online') {
+				this.io.to(this.users[id]).send('deleteFile', {list: obj[id]})
+			} else {
+				if (this.deleteFile[id]) {
+					this.deleteFile[id] = [...this.deleteFile[id], ...obj[id]];
+				} else {
+					this.deleteFile[id] = obj[id];
+				}
+			}
+		}
+	}
 }
 
 const users={}

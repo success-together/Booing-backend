@@ -15,6 +15,13 @@ const fragmentation = async (req, res) => {
     let user_id = req.params.user_id;
     let availableDevices = await devices.getAvailableDevices(user_id);
 
+    if (availableDevices.length === 0) {
+      return res.status(403).json({
+        status: "fail",
+        message: "now booing cloud full. try again later.",
+      });
+    }
+
     //for testing, manually add devices.
     if (availableDevices.length > 1) delete availableDevices[user_id];
     let noad = availableDevices?.length; // Number of availble devices

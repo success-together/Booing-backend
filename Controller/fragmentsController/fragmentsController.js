@@ -3,7 +3,7 @@ const User = require('../../Model/userModel/User');
 const mongoose = require("mongoose");
 const isArray = require("../../Helpers/isArray");
 const isObjectId = require("../../Helpers/isObjectId");
-
+const socket = require("../../Middleware/Socket");
 const getUsedStorage = async (req, res) => {
   const { user_id } = req.params;
   try {
@@ -184,17 +184,20 @@ const deleteFilesPermanently = async (req, res) => {
     }
     let space = {};
     let mySpace = 0;
+    let deleteObj = {}
     await Promise.all(files.map((file) => {
       mySpace += file.size*1;
       for (var i = 0; i < file['updates'].length; i++) {
         for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
           if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
-          else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;            
+          else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;
+          if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push({filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category});
+          else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [{filename: `${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`, category: file.category}];
         }
       }
       return file.delete();
     }));
-
+    socket.deleteFileFromDevices(deleteObj);
     for (let key in space) {
       await User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: (space[key]*-1)}});
     }
