@@ -302,6 +302,85 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const getMembership = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    let user = await User.findOne({ _id: user_id });
+    if (!user) {
+      return res.status(400).json({ 
+        msg: "You must be logined.", 
+        success: false 
+      });
+    }
+    const now = new Date();
+    const expire = new Date(user.mermbership.expire?user.mermbership.expire:Date.now());
+    const leftMonth = (expire.getFullYear()-now.getFullYear())*12 + expire.getMonth()-now.getMonth()-1;
+    if (leftMonth < 0) leftMonth = 0
+    const result = Object.assign({}, user.mermbership);
+    result.left = leftMonth;
+    console.log(result)
+    return res.status(200).json({
+      msg: "Success getting Membership .",
+      success: true,
+      data: result,
+    });
+  } catch (err) {
+    return res.status(500).json({ msg: err.message, success: false });
+  }
+}
+const purchaseMembership = async (req, res) => {
+  try {
+    const { m_id, quantity, isMonth, user_id, offer } = req.body; 
+    let user = await User.findOne({ _id: user_id });
+    if (!user) {
+      return res.status(400).json({ 
+        msg: "You must be logined.", 
+        success: false 
+      });
+    }
+    user.mermbership.m_id = m_id;
+    user.mermbership.start = Date.now();
+    if (offer) {
+
+    } else {
+      //get expire date
+        let now = new Date();
+        let day = now.getDate();
+        let month = now.getMonth() + 1;
+        let year = now.getFullYear();
+        //next date
+        let nmonth = 0;
+        let nyear = 0;
+        if (isMonth) {
+          let temp = month*1 + quantity;
+          nyear = year*1 + Math.trunc(temp/12);
+          nmonth = temp%12;
+          if (nmonth < 10)  nmonth = `0${nmonth}`; 
+        } else {
+          nyear = year*1 + quantity;
+          nmonth = month;
+        }
+      //end get expire date
+
+      user.mermbership.expire = new Date(`${nyear}-${nmonth}-${day}`).getTime();
+      user.mermbership.isMonth = isMonth;
+      user.mermbership.quantity = quantity;
+    }
+    console.log(user)
+    user.save().then(success => {
+      return res.status(200).json({
+        msg: "Purchase completed!",
+        success: true,
+      });
+    }).catch(err => {
+      console.log(err);
+      return res.status(500).json({ msg: err.message, success: false });
+    })
+  } catch (err) {
+    return res.status(500).json({ msg: err.message, success: false });
+  }
+}
 module.exports = {
   signup,
   socialMediaSignup,
@@ -310,4 +389,6 @@ module.exports = {
   updateProfile,
   updatePassword,
   forgotPassword,
+  getMembership,
+  purchaseMembership,
 };

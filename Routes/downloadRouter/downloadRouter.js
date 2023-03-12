@@ -10,6 +10,10 @@ const {
   getUsedStorage,
   deleteFilesPermanently,
   restoreFiles,
+  checkAutoDeleteFile,
+  getTraffic,
+  receiveGiftCoin,
+  sellSpace,
 } = require("../../Controller/fragmentsController/fragmentsController");
 const route = Router();
 const downloadController = require("../../Controller/downloadController/downloadController");
@@ -33,5 +37,9 @@ route.post("/booing/logged-in-user/getMyFiles", getMyFiles);
 // // ! to test
 route.get("/booing/logged-in-user/getDeletedFiles/:user_id", getDeletedFiles);
 route.get("/booing/logged-in-user/getUsedSpace/:user_id", getUsedStorage);
+route.get("/booing/logged-in-user/checkAutoDeleteFile/:user_id", checkAutoDeleteFile);
+route.get("/booing/logged-in-user/getTraffic/:user_id", getTraffic);
+route.get("/booing/logged-in-user/receiveGiftCoin/:user_id", receiveGiftCoin);
+route.get("/booing/logged-in-user/sellSpace/:user_id/:quantity", sellSpace);
 
 module.exports = route;

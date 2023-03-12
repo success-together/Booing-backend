@@ -53,9 +53,12 @@ const fragmentsSchema = new Schema({
     type: Date,
   },
   expireAt: {
-    type: Date,
-    expires: 60 * 60 * 24 * 7, // 7 days
+    type: Number,
   },
+  weight: {
+    type: Number, //initial 10000, -100 each day, when user download file +5000
+    default: 10000 //when value is 0, delete request
+  }
 });
 
 fragmentsSchema.post(/^find/, async function (result, next) {

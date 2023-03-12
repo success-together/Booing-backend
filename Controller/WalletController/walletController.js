@@ -1,12 +1,12 @@
 const { default: mongoose } = require("mongoose");
 const Wallet = require("../../Model/WalletModel/Wallet");
+const stripe = require('stripe')('sk_test_51MjkVyFXtBJLEoWyonULYxNGHZlwnlS6ySLxhbidpRmsfFiSHBGXYEV3OVHmWmKbWwoW108HdfrxQHBJqHY9vpmX00sHbk7SjG');
 
 const getWallet = async (req, res) => {
   const user_id = req.params.id;
   console.log(user_id);
   await Wallet.findOne({ user_id: mongoose.Types.ObjectId(user_id) })
     .then((wallet) => {
-      console.log(wallet);
       return res
         .status(200)
         .json({ data: wallet, success: true, msg: "success" });
@@ -17,8 +17,7 @@ const getWallet = async (req, res) => {
 };
 
 const walletTransaction = async (req, res) => {
-  const { isIncremenet, coins, user_id, isSpaceSelled } = req.body;
-  console.log(req.body)
+  const { space, coins, user_id, isSpaceSelled } = req.body;
   await Wallet.findOneAndUpdate(
     { user_id: user_id },
     {
@@ -26,7 +25,6 @@ const walletTransaction = async (req, res) => {
       $inc: { amount: isIncremenet ? coins : -coins },
       $push: {
         transactions: {
-          isIncremenet: isIncremenet,
           amount: coins,
           date: new Date(),
         },
@@ -45,4 +43,46 @@ const walletTransaction = async (req, res) => {
     });
 };
 
-module.exports = { walletTransaction, getWallet };
+const stripeSheet = async (req, res) => {
+  const {product, user_id} = req.body;
+  let price = 0;
+  if (product.offer) {
+    price = product.after;
+  } else {
+    const basic = product.isMonth?product.monthly:product.yearly;
+    price = product.quantity * basic - product.leftPrice;
+    price = Math.trunc(price*100)/100;
+  }
+  console.log(price)
+  try {
+    const customer = await stripe.customers.create();
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      {customer: customer.id},
+      {apiVersion: "2022-11-15"}
+    );
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: price*100,
+      currency: "eur",
+      customer: customer.id,
+
+      payment_method_types: [
+          "card"
+      ]
+    });
+
+    return res.json({
+      clientSecret: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      merchantName: product.id,
+      publishableKey: "pk_test_51MjkVyFXtBJLEoWydBEh9IL3AsnH5mNpeTO4A6mq58R6rrqb1HuOX0BgH9xcVJJXBY74fNAMcRR77tcFVErZebLp001fnnhhdH"
+    })
+  } catch {
+    res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+}
+const checkoutSpace = (req, res) => {}
+module.exports = { walletTransaction, getWallet, stripeSheet };

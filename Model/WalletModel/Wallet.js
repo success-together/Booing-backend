@@ -11,9 +11,15 @@ const walletSchema = new Schema({
     type: Number,
     default: 0,
   },
-  transactions: {
-    type: Array
-  },
+  transactions: [{
+      status: {type: Number, default: 0}, //0: pending, 1: sell, 2: gift, 3: receive, 4: buy, 5: send 
+      amount: {type: Number, default: 0},
+      date: {type: Date, default: Date.now()},
+      before: {type: Number, default: 0},
+      after: {type: Number, default: 0},
+      info: {type: String}
+  }],
+  updated_at: Date,
   isSpaceSelled : {
     type : Boolean,
     default : false,

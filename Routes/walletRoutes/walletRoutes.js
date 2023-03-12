@@ -4,4 +4,5 @@ const walletController = require('../../Controller/WalletController/walletContro
 
 router.get('/booing/getWallet/:id', walletController.getWallet);
 router.post('/booing/transaction', walletController.walletTransaction);
+router.post('/booing/stripe-sheet/:user_id', walletController.stripeSheet)
 module.exports = router;

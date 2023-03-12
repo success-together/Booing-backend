@@ -20,7 +20,8 @@ const directoriesRoutes = require("./Routes/directoriesRoutes/directoriesRoutes"
 const walletRoutes = require('./Routes/walletRoutes/walletRoutes')
 
 const socketServer = require('./Middleware/Socket');
-
+const User = require('./Model/userModel/User');
+const Fragments = require('./Model/fragmentsModel/Fragments');
 //Dotenv configuration
 const dotenv = require("dotenv");
 dotenv.config();
@@ -82,3 +83,36 @@ app.use(walletRoutes);
 //Use body parser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json());
+
+
+//////////////////////CRON JOB/////////////////////////
+// var CronJob = require('cron').CronJob;
+// var job = new CronJob(
+//   '* 0 * * *',
+//   function() {
+       // Fragments.updateMany( {isDirectory: false, isDeleted: false},{$inc:{weight: -100}}).then(success => {
+       //  Fragments.find({weight: {$lt: 1}}).then(files => {
+            // files.map(async (file) => {
+            //   const sended = await socketServer.sendDeleteOffer({
+            //     user_id: file.user_id,
+            //     _id: file._id, 
+            //     filename: file.filename, 
+            //     updated_at: file.updated_at, 
+            //     category: file.category               
+            //   })
+            //   if (sended) {
+            //     file.weight = 1000;
+            //     file.save();
+            //   }
+            // })
+       //    socketServer.sendDeleteOffer(res);
+       //  })
+       // })
+//     console.log('You will see this message every day 00:00:00');
+//   },
+//   null,
+//   true,
+//   'America/Los_Angeles'
+// );
+// Use this if the 4th param is default value(false)
+// job.start()

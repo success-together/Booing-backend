@@ -101,6 +101,7 @@ const fragmentation = async (req, res) => {
           thumbnail,
           category
         );
+        console.log(file.path)
         fs.unlinkSync(file.path);
         return { id: _id, name: file.filename, updates: frag, thumbnail: thumbnail };
       })

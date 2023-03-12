@@ -1,5 +1,6 @@
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const User = require('../../Model/userModel/User');
+const Wallet = require('../../Model/WalletModel/Wallet');
 const mongoose = require("mongoose");
 const isArray = require("../../Helpers/isArray");
 const isObjectId = require("../../Helpers/isObjectId");
@@ -27,6 +28,169 @@ const getUsedStorage = async (req, res) => {
     return res.status(500).json({ msg: err?.message, success: false });
   }
 };
+
+const checkAutoDeleteFile = async (req, res) => {
+  const {user_id} = req.params;
+  try {
+    const files = await Fragments.find({user_id: user_id, isDeleted: true});
+    if (files.length) {
+      let space = {};
+      let mySpace = 0;
+      let deleteObj = {}
+      await Promise.all(files.map((file) => {
+        if (file.expireAt < Date.now()) {
+          mySpace += file.size*1;
+          for (var i = 0; i < file['updates'].length; i++) {
+            for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
+              if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
+              else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;
+              if (deleteObj[file['updates'][i]['devices'][j]['device_id']]) deleteObj[file['updates'][i]['devices'][j]['device_id']].push(`${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`);
+              else deleteObj[file['updates'][i]['devices'][j]['device_id']] = [`${file["updates"][i]['fragmentID']}-${file["updates"][i]['uid']}-${file["updates"][i]['user_id']}.json`];
+            }
+          }
+          return file.delete();
+        }
+      }));
+      if (mySpace) {
+        socket.deleteFileFromDevices(deleteObj);
+        for (let key in space) {
+          await User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: (space[key]*-1)}});
+        }
+        await User.findOneAndUpdate({_id: user_id}, {$inc:{used_mycloud: (mySpace*-1)}});
+      }
+      return res.status(200).json({
+        status: "success"
+      });
+    }
+  } catch {
+    return res.status(500).json({
+      status: "fail",
+      message: "something went wrong",
+    });
+  }
+}
+
+const getTraffic = async (req, res) => {
+  try {
+    const {user_id} = req.params;
+    User.findOne({_id: user_id}).then(user => {
+      if (user) {
+        res.json({
+          msg: 'getting traffic amount success.',
+          success: true,
+          data: user.traffic_cloud
+        })
+      }
+    })
+  } catch(err) {
+    return res.status(500).json({ msg: err?.message, success: false });
+  }
+}
+
+const receiveGiftCoin = async (req, res) => {
+  try {
+    const {user_id} = req.params;
+    await User.findOne({_id: user_id}).then(async (user) => {
+      if (user) {
+        if (user.traffic_cloud >= 1000000000) { //more than 1G
+          await Wallet.findOne({user_id: user_id}).then(async wallet => {
+            wallet.transactions.push({
+              status: 2,
+              amount: 65000,
+              before: wallet.amount,
+              after: wallet.amount+65000,
+              info: 'You recieved gift with 50000 BOO for 1 GB of data exchanged'
+            });
+            wallet.amount += 65000;
+            wallet.updated_at = Date.now();
+            await wallet.save().then(async success => {
+              user.traffic_cloud -= 1000000000;
+              await user.save();
+              return res.json({
+                msg: '65000 Boo funded in your wallet.',
+                success: true,
+                data: user.traffic_cloud
+              })
+            }).catch(err => {
+              console.log('wallet save error=>', err);
+              return res.json({
+                msg: 'faild getting gift coin.',
+                success: false,
+                data: user.traffic_cloud
+              })                
+            })
+          })
+        } else {
+          return res.json({
+            msg: 'Data transfer amount is low than 1G.',
+            success: false,
+            data: user.traffic_cloud
+          })
+        }
+      } else {
+        return res.json({
+          msg: 'You have to sign in.',
+          success: false,
+          data: user.traffic_cloud
+        })
+      }
+    })
+  } catch(err) {
+    return res.status(500).json({ msg: err?.message, success: false });
+  }
+}
+
+const sellSpace = async (req, res) => {
+  try {
+    const {user_id, quantity} = req.params;
+    await User.findOne({_id: user_id}).then(async (user) => {
+      if (user) {
+        await Wallet.findOne({user_id: user_id}).then(wallet => {
+          if (wallet) {
+            wallet.transactions.push({
+              status: 1,
+              amount: 5000*quantity,
+              before: wallet.amount,
+              after: wallet.amount+5000*quantity,
+              info: `You selled ${quantity}GB space and got ${5000*quantity} Boo in your wallet.`
+            });
+            wallet.amount += 5000*quantity;
+            wallet.updated_at = Date.now();
+            wallet.save().then(async success => {
+              if (user.occupy_cloud === 1) {
+                user.occupy_cloud = quantity*1;
+              } else {
+                user.occupy_cloud += quantity*1;
+              }
+              await user.save();
+              return res.json({
+                msg: `You selled ${quantity}GB space and got ${5000*quantity} Boo in your wallet.`,
+                success: true,
+                data: user.occupy_cloud
+              })
+            }).catch(err => {
+              return res.json({
+                msg: 'faild selling space',
+                success: false,
+                data: user.occupy_cloud
+              })
+            })
+          } else {
+            return res.json({
+              msg: 'faild selling space',
+              success: false,
+              data: user.occupy_cloud
+            })
+          }
+        })
+      }
+    })
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({msg: err?.message, success: false});
+  }
+}
 
 const uploadFragments = async (req, res) => {
   try {
@@ -143,7 +307,7 @@ const deleteFiles = async (req, res) => {
           { _id: file_id },
           // ! delete fragment only after duration
           // { $set: { "updates.$[].fragment": "",
-          { isDeleted: true, expireAt: new Date() }
+          { isDeleted: true, weight: 0,  expireAt: Date.now() + 24*60*60*1000 }
         )
       )
     );
@@ -245,6 +409,7 @@ const restoreFiles = async (req, res) => {
     await Promise.all(
       files.map((file) => {
         file.isDeleted = false;
+        file.weight = 10000;
         file.expireAt = null;
         return file.save();
       })
@@ -356,4 +521,8 @@ module.exports = {
   getMyFiles,
   deleteFilesPermanently,
   restoreFiles,
+  checkAutoDeleteFile,
+  getTraffic,
+  receiveGiftCoin,
+  sellSpace,
 };

@@ -24,8 +24,9 @@ route.post('/booing/logged-in-user/updatePassword',
  userController.updatePassword)
 // Forgot password
 route.post('/booing/forgotPassword', userController.forgotPassword)
+route.post("/booing/logged-in-user/getMembership/:user_id", userController.getMembership);
+route.post("/booing/logged-in-user/purchaseMembership", userController.purchaseMembership);
 
-i=0
 route.get('/', async (req, res) => {
    res.send("hello")
 })

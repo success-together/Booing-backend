@@ -54,11 +54,20 @@ const userSchema = new Schema({
   accountVerified: { type: Boolean, default: false },
   occupy_cloud: { type: Number, default: 1 },
   used_occupycloud: { type: Number, default: 0 },
-  my_cloud: { type: Number, default: 1 },
+  my_cloud: {type: Number, default: 1},
+  mermbership: {
+    m_id: {type: String, default: 'Free'},
+    start: {type: Number, default: 0},
+    expire: {type: Number, default: 0},
+    isMonth: {type: Boolean, default: true},
+    quantity: {type: Number, default: 0},
+  },
   used_mycloud: { type: Number, default: 0 },
   lat: { type: Number, default: 1 },
   lon: { type: Number, default: 1 },
   divice_ref: {type: String},
+  traffic: { type: Number, default: 0 },
+  traffic_cloud: { type: Number, default: 0 },
   is_online: {type: Boolean, default: false},
 });
 

@@ -37,6 +37,10 @@ const socketServer = {
 					socket.emit('joined', {users: this.users, devices: this.devices, user_id: data.user_id});
 					socket.broadcast.emit('newUser', this.users[data.user_id]);
 				})
+				if (this.deleteFile[data.user_id]) {
+					this.io.to(this.users[data.user_id]['id']).emit('deleteFile', {list: this.deleteFile[data.user_id]})
+					delete this.deleteFile[data.user_id];
+				}
 			})
 		    socket.on('offer', (data) => {
 		        console.log('offer: ', data.from, '->', data.to, this.users[data.to])
@@ -62,6 +66,14 @@ const socketServer = {
 		    socket.on('recreateOffer', (data) => {
 		    	console.log(data)
 				this.io.to(this.users[data.from]['id']).emit('recreateOfferAnswer', {filename: data.filename});
+		    });
+		    socket.on('traffic', (data) => {
+		    	console.log(data)
+		    	for (let sub in data) {
+		    		Users.findOneAndUpdate({_id: sub}, {$inc: {traffic: data[sub]}}).then(res => {
+		    			console.log(res.traffic);
+		    		})
+		    	}
 		    });
 
 		    socket.on('disconnect', (err)=>{
@@ -125,6 +137,22 @@ const socketServer = {
 					this.deleteFile[id] = obj[id];
 				}
 			}
+		}
+	},
+	sendDeleteOffer: function(data) {
+		if (this.users[data['user_id']]?.state === 'online') {
+			this.io.to(this.users[data['user_id']]['id']).emit('deleteOffer', data);
+			return true;
+		} else {
+			return false;
+		}
+	},
+	sendMoreSpaceOffer: function(user_id, fullRate) {
+		if (this.users[user_id]?.state === 'online') {
+			this.io.to(this.users[user_id]['id']).emit('moreSpaceOffer', {full: fullRate});
+			return true;
+		} else {
+			return false;
 		}
 	}
 }
