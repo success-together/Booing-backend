@@ -44,7 +44,6 @@ const signup = async (req, res) => {
     let text =
       "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
     sendMail(email, " Confirm your email adress. ", text, code);
-    console.log("send email -> ", text)
     // CREATE NEW USER WALLET
     const wallet = new Wallet({ user_id: savedUser._id });
     await wallet.save();
