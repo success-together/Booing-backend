@@ -3,95 +3,86 @@ const User = require("../../Model/userModel/User");
 
 const addDevice = async (req, res) => {
   const { device_ref, created_at, type, name, user_id, lat, lon } = req.body;
-  User.findOneAndUpdate({_id: user_id}, {lat: lat, lon: lon, device_ref: device_ref}).then(user => {
-    return res.status(200).json({
-      success: true,
-      msg: "you started storage server."
-    })
-  })
-  // return res.status(200).json({
-  //   success: false,
-  //   msg: "you faild to start storage server."
-  // })
+  await User.findOneAndUpdate({_id: user_id}, {lat: lat, lon: lon, device_ref: device_ref});
 
-  // // ADD DEVICE TO DEVICE COLLECTION
-  // let dev = new Device({
-  //   device_ref,
-  //   created_at,
-  //   type,
-  //   name,
-  //   user_id,
-  //   lat,
-  //   lon,
-  //   status: 5,
-  // });
-  // const isExistedDevice = await Device.findOne({ device_ref: device_ref });
-  // if (!isExistedDevice) {
-  //   await dev
-  //     .save()
-  //     .then((Newdevice) => {
-  //       if (Newdevice) {
-  //         // PUSH THE NEW DEVICE ID TO USER COLLECTION
-  //         User.findOneAndUpdate(
-  //           { _id: user_id },
-  //           {
-  //             $push: { devices: Newdevice._id },
-  //           }
-  //         )
-  //           .then((savedUser) => {
-  //             if (savedUser)
-  //               return res.status(200).json({
-  //                 success: true,
-  //                 msg: "device created successfully",
-  //                 data: dev,
-  //               });
-  //             else
-  //               return res
-  //                 .status(400)
-  //                 .json({ success: false, msg: "failed to add device" });
-  //           })
-  //           .catch((err) => {
-  //             return res
-  //               .status(400)
-  //               .json({ success: false, msg: err?.message });
-  //           });
-  //       } else
-  //         return res
-  //           .status(400)
-  //           .json({ success: false, msg: "failed to add device" });
-  //     })
-  //     .catch((err) =>
-  //       res.status(400).json({ success: false, msg: err?.message })
-  //     );
-  // } else if (isExistedDevice) {
-  //   const checkDeviceInUserDevices = await User.findOne({
-  //     _id: user_id,
-  //     devices: isExistedDevice._id,
-  //   });
-  //   if (!checkDeviceInUserDevices) {
-  //     await User.findOneAndUpdate(
-  //       { _id: user_id },
-  //       {
-  //         $push: { devices: isExistedDevice._id },
-  //       }
-  //     );
-  //     return res.status(200).json({
-  //       sucess: true,
-  //       msg: "Device already exists. Device has been successfully added to user devices.",
-  //       data: isExistedDevice,
-  //     });
-  //   } else {
-  //     return res.status(200).json({
-  //       sucess: false,
-  //       msg: "Device already exists",
-  //       data: isExistedDevice,
-  //     });
-  //   }
-  // } else
-  //   return res.status(500).json({
-  //     sucess: false,
-  //     msg: "Error while addind device",
-  //   });
+  // ADD DEVICE TO DEVICE COLLECTION
+  let dev = new Device({
+    device_ref,
+    created_at,
+    type,
+    name,
+    user_id,
+    lat,
+    lon,
+    status: 5,
+  });
+  const isExistedDevice = await Device.findOne({ device_ref: device_ref });
+  if (!isExistedDevice) {
+    await dev
+      .save()
+      .then((Newdevice) => {
+        if (Newdevice) {
+          // PUSH THE NEW DEVICE ID TO USER COLLECTION
+          User.findOneAndUpdate(
+            { _id: user_id },
+            {
+              $push: { devices: Newdevice._id },
+            }
+          )
+            .then((savedUser) => {
+              if (savedUser)
+                return res.status(200).json({
+                  success: true,
+                  msg: "device created successfully",
+                  data: dev,
+                });
+              else
+                return res
+                  .status(400)
+                  .json({ success: false, msg: "failed to add device" });
+            })
+            .catch((err) => {
+              return res
+                .status(400)
+                .json({ success: false, msg: err?.message });
+            });
+        } else
+          return res
+            .status(400)
+            .json({ success: false, msg: "failed to add device" });
+      })
+      .catch((err) =>
+        res.status(400).json({ success: false, msg: err?.message })
+      );
+  } else if (isExistedDevice) {
+    const checkDeviceInUserDevices = await User.findOne({
+      _id: user_id,
+      devices: isExistedDevice._id,
+    });
+    if (!checkDeviceInUserDevices) {
+      await User.findOneAndUpdate(
+        { _id: user_id },
+        {
+          $push: { devices: isExistedDevice._id },
+        }
+      );
+      return res.status(200).json({
+        sucess: true,
+        msg: "Device already exists. Device has been successfully added to user devices.",
+        data: isExistedDevice,
+      });
+    } else {
+      return res.status(200).json({
+        sucess: false,
+        msg: "Device already exists",
+        data: isExistedDevice,
+      });
+    }
+  } else
+    return res.status(500).json({
+      sucess: false,
+      msg: "Error while addind device",
+    });
 };
 
 const getAvailableDevices = async (user_id) => {
