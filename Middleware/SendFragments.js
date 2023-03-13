@@ -18,17 +18,14 @@ const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail,
       const { _id } = await Frags.save();
       console.log("Fragments ready to send");
       const space = await socket.sendFragment(newFrags, user_id);
-      
+      console.log("+occupy_cloud -> ", space)
       //increase occpyCloud space
       for (let key in space) {
         User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: space[key], traffic_cloud: space[key]}}).then(user => {
-          console.log(user)
           const fullRate = user['used_occupycloud']/(user['occupy_cloud']*1000000000);
-          console.log(fullRate)
           if (fullRate > 0.9) {
             socket.sendMoreSpaceOffer(user['_id'], Math.round(fullRate*100));
           }
-          console.log(true)
         })
       }
       //increase myCloud space
