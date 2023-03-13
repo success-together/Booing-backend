@@ -14,7 +14,7 @@ module.exports.sendMail = (to, subject, text, code) => {
   console.log(process.env.ADMIN_EMAIL, process.env.PASSWORD_EMAIL)
   // Step 2
   let mailOptions = {
-    from: "booingcloud@gmail.com", // TODO: email sender
+    from: "support@booing.cloud", // TODO: email sender
     to: to, // TODO: email receiver
     subject: subject,
     text: text,
