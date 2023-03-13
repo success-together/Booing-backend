@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 //step 1 mailer
 module.exports.sendMail = (to, subject, text, code) => {
   let transporter = nodemailer.createTransport({
-    host: "smtp.aruba.it",
+    host: "smtps.aruba.it",
     port: 465,
     secure: true,
     auth: {
