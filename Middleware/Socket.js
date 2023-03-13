@@ -85,6 +85,15 @@ const socketServer = {
 					})
 		    	}
 		    })
+		    socket.on('logout', ()=>{
+		    	console.log('logout', socket.user_id)
+		    	if (this.users[socket.user_id]) {
+					User.findOneAndUpdate({_id: socket.user_id}, {is_online: false}).then(user => {
+				    	this.users[socket.user_id]['state'] = 'offline';
+				    	this.users[socket.user_id]['update'] = Date.now();
+					})
+		    	}
+		    })
 		    socket.on('reconnect', () => {
 		    	console.log('reconnect')
 		    })
