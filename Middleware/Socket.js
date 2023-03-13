@@ -43,7 +43,7 @@ const socketServer = {
 				}
 			})
 		    socket.on('offer', (data) => {
-		        console.log('offer: ', data.from, '->', data.to, this.users[data.to])
+		        console.log('offer: ', data.from, '->', data.to)
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('offer', {offer: data.offer, from: data.from, reqdata: data.reqdata})
 		    	} else {
@@ -58,7 +58,7 @@ const socketServer = {
 		    	}
 		    })
 		    socket.on('icecandidate', (data) => {
-		    	console.log('icecandidate', data);
+		        console.log('answer', data.from, '->', data.to, "isOffer -> ", data.isOffer)
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('icecandidate', {candidate: data.candidate, from: data.from, isOffer: data.isOffer})
 		    	}
