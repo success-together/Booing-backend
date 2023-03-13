@@ -286,7 +286,6 @@ module.exports.sendMail = (to, subject, text, code) => {
 
   // Step 3
   transporter.sendMail(mailOptions, (err, info) => {
-    console.log(err, info)
     if (err) return { err };
     return info;
   });
