@@ -127,6 +127,7 @@ const signin = async (req, res) => {
   try {
     //get info
     const { email, password } = req.body;
+    console.log(email, password)
 
     //Check if the email exists in the database
     let user = await User.findOne({ email });
