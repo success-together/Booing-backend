@@ -3,15 +3,15 @@ const nodemailer = require("nodemailer");
 //step 1 mailer
 module.exports.sendMail = (to, subject, text, code) => {
   let transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    host: "smtp.aruba.it",
     port: 465,
     secure: true,
     auth: {
       user: process.env.ADMIN_EMAIL,
-      pass: process.env.PASSWORD_EMAIL || "oymchhoymebfczsv",
+      pass: process.env.PASSWORD_EMAIL,
     },
   });
-
+  console.log(process.env.ADMIN_EMAIL, process.env.PASSWORD_EMAIL)
   // Step 2
   let mailOptions = {
     from: "booingcloud@gmail.com", // TODO: email sender
