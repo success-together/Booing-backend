@@ -19,8 +19,8 @@ module.exports.sendMail = (to, subject, text, code) => {
     subject: subject,
     text: text,
     attachments: [{
-     filename: 'logo_white.svg',
-     path: __dirname +'/../../Image/logo_white.svg',
+     filename: 'logo_white.png',
+     path: __dirname +'/../../Image/logo_white.png',
      cid: 'booingLogo'
     }],
     html: `<!DOCTYPE html>
@@ -141,7 +141,7 @@ module.exports.sendMail = (to, subject, text, code) => {
               <tr>
                 <td align="center" valign="top" style="padding: 36px 24px; background-color:#1a82e2;">
                   <a href="" target="_blank" style="display: inline-block;">
-                    <img src="cid:booingLogo" alt="Logo" border="0" width="100" style="display: block; width: 100px; max-width: 100px; min-width: 48px;">
+                    <img src="cid:booingLogo" alt="Logo" border="0" width="150" style="display: block; width: 150px; max-width: 150px; min-width: 48px;">
                   </a>
                 </td>
               </tr>
