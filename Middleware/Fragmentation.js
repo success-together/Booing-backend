@@ -7,7 +7,33 @@ const Device = require("../Model/deviceModel/Device");
 const SendFragments = require("../Middleware/SendFragments");
 const socket = require('./Socket');
 const {getCategoryByType} = require("../Middleware/CheckMimetype");
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
+var ffprobe = require('ffprobe-static');
+ffmpeg.setFfprobePath(ffprobe.path);
 
+const tempFile = 'thumbnail_video.png';
+const generateThumb = (filename) => {
+  console.log('../'+filename)
+  return new Promise((resolve, reject) => {
+    ffmpeg({ source: '../'+filename })
+    .screenshots({
+         count: 1,
+         timestamps: ['5%'],
+         folder: __dirname+'/../tmp/',
+         size: '?x100',
+         filename: tempFile
+    })
+    .on('error', function (error) {
+      console.log(error)
+       reject(error)
+    })
+    .on('end', function(aaa) {
+      resolve(tempFile)
+    })    
+  });
+}
 
 const fragmentation = async (req, res) => {
   try {
@@ -90,8 +116,17 @@ const fragmentation = async (req, res) => {
           let options = { width: 100, responseType: 'base64', fit: 'cover' }  
           thumbnail = await imageThumbnail(encodedFile64, options);
           thumbnail = "data:image/"+file.mimetype+";base64, " + thumbnail;
-        }   
-
+        } else if (category === 'video') {
+          // try {
+            console.log('Before')
+            await generateThumb(file.path);
+            console.log('After')
+            thumbnail = fs.readFileSync(__dirname+"/../"+tempFile, { encoding: "base64" });
+            console.log('thumbnail')
+          // } catch {
+            // thumbnail = "";
+          // }
+        }
         const {_id, frag} = await SendFragments(
           fragments,
           user_id,

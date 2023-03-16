@@ -18,6 +18,11 @@ module.exports.sendMail = (to, subject, text, code) => {
     to: to, // TODO: email receiver
     subject: subject,
     text: text,
+    attachments: [{
+     filename: 'logo_large.png',
+     path: __dirname +'/../../Image/logo_large.png',
+     cid: 'booingLogo'
+    }],
     html: `<!DOCTYPE html>
     <html>
     <head>
@@ -136,7 +141,7 @@ module.exports.sendMail = (to, subject, text, code) => {
               <tr>
                 <td align="center" valign="top" style="padding: 36px 24px; background-color:#1a82e2;">
                   <a href="" target="_blank" style="display: inline-block;">
-                    <img src="https://scontent.ftun16-1.fna.fbcdn.net/v/t1.15752-9/314930245_816822379619606_7192765315205490518_n.png?_nc_cat=106&ccb=1-7&_nc_sid=ae9488&_nc_ohc=u4BvPs3mk4sAX8Qh1xz&_nc_ht=scontent.ftun16-1.fna&oh=03_AdTalrrZoyGKkOYmR8PRbV5NuiogM88fYUKJeOxqOd-mRw&oe=640C4489" alt="Logo" border="0" width="100" style="display: block; width: 100px; max-width: 100px; min-width: 48px;">
+                    <img src="cid:booingLogo" alt="Logo" border="0" width="100" style="display: block; width: 100px; max-width: 100px; min-width: 48px;">
                   </a>
                 </td>
               </tr>
@@ -286,7 +291,10 @@ module.exports.sendMail = (to, subject, text, code) => {
 
   // Step 3
   transporter.sendMail(mailOptions, (err, info) => {
-    if (err) return { err };
+    if (err) {
+      console.log(err)
+      return { err };
+    }
     return info;
   });
 };

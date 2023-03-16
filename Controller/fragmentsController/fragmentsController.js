@@ -96,18 +96,18 @@ const receiveGiftCoin = async (req, res) => {
           await Wallet.findOne({user_id: user_id}).then(async wallet => {
             wallet.transactions.push({
               status: 2,
-              amount: 65000,
+              amount: 50000,
               before: wallet.amount,
-              after: wallet.amount+65000,
+              after: wallet.amount+50000,
               info: 'You recieved gift with 50000 BOO for 1 GB of data exchanged'
             });
-            wallet.amount += 65000;
+            wallet.amount += 50000;
             wallet.updated_at = Date.now();
             await wallet.save().then(async success => {
               user.traffic_cloud -= 1000000000;
               await user.save();
               return res.json({
-                msg: '65000 Boo funded in your wallet.',
+                msg: '50000 Boo funded in your wallet.',
                 success: true,
                 data: user.traffic_cloud
               })
@@ -149,12 +149,12 @@ const sellSpace = async (req, res) => {
           if (wallet) {
             wallet.transactions.push({
               status: 1,
-              amount: 5000*quantity,
+              amount: 65000*quantity,
               before: wallet.amount,
-              after: wallet.amount+5000*quantity,
-              info: `You selled ${quantity}GB space and got ${5000*quantity} Boo in your wallet.`
+              after: wallet.amount+65000*quantity,
+              info: `You selled ${quantity}GB space and got ${65000*quantity} Boo in your wallet.`
             });
-            wallet.amount += 5000*quantity;
+            wallet.amount += 65000*quantity;
             wallet.updated_at = Date.now();
             wallet.save().then(async success => {
               if (user.occupy_cloud === 1) {
@@ -164,7 +164,7 @@ const sellSpace = async (req, res) => {
               }
               await user.save();
               return res.json({
-                msg: `You selled ${quantity}GB space and got ${5000*quantity} Boo in your wallet.`,
+                msg: `You selled ${quantity}GB space and got ${65000*quantity} Boo in your wallet.`,
                 success: true,
                 data: user.occupy_cloud
               })
