@@ -44,6 +44,7 @@ const signup = async (req, res) => {
     let text =
       "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
     sendMail(email, " Confirm your email adress. ", text, code);
+    console.log(code)
     // CREATE NEW USER WALLET
     const wallet = new Wallet({ user_id: savedUser._id });
     await wallet.save();
@@ -329,7 +330,7 @@ const getMembership = async (req, res) => {
 }
 const purchaseMembership = async (req, res) => {
   try {
-    const { m_id, quantity, isMonth, user_id, offer } = req.body; 
+    const { m_id, quantity, isMonth, user_id, offer, amount } = req.body; 
     let user = await User.findOne({ _id: user_id });
     if (!user) {
       return res.status(400).json({ 
@@ -366,7 +367,35 @@ const purchaseMembership = async (req, res) => {
       user.mermbership.quantity = quantity;
     }
     console.log(user)
-    user.save().then(success => {
+    user.save().then( async success => {
+        await Wallet.findOne({user_id: user_id}).then(wallet => {
+          if (wallet) {
+            wallet.transactions.push({
+              status: 4,
+              amount: amount*50000000,
+              before: wallet.amount,
+              after: wallet.amount,
+              info: "",
+            });
+            wallet.updated_at = Date.now();
+            wallet.save().then(async success => {
+              return res.json({
+                msg: `Purchase completed!`,
+                success: true,
+              })
+            }).catch(err => {
+              return res.json({
+                msg: 'faild buying space',
+                success: false,
+              })
+            })
+          } else {
+            return res.json({
+              msg: 'faild buying space',
+              success: false,
+            })
+          }
+        })      
       return res.status(200).json({
         msg: "Purchase completed!",
         success: true,

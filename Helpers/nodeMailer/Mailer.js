@@ -19,8 +19,8 @@ module.exports.sendMail = (to, subject, text, code) => {
     subject: subject,
     text: text,
     attachments: [{
-     filename: 'logo_large.png',
-     path: __dirname +'/../../Image/logo_large.png',
+     filename: 'logo_white.svg',
+     path: __dirname +'/../../Image/logo_white.svg',
      cid: 'booingLogo'
     }],
     html: `<!DOCTYPE html>
