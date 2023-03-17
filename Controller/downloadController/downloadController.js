@@ -51,10 +51,9 @@ const types = {
 
 //Download File
 const download = async (req, res) => {
-  try {
+  // try {
     const user_id = req.params.user_id;
     const type = req.params.type;
-
     if (!Object.keys(types).includes(type)) {
       return res.status(403).json({ msg: "invalid type", success: false });
     }
@@ -67,6 +66,7 @@ const download = async (req, res) => {
       isDirectory: false,
       category: type
     });
+    console.log(fragments.length)
     if (fragments.length == 0)
       return res.status(400).json({ msg: "no fragment found", success: false });
 
@@ -95,9 +95,9 @@ const download = async (req, res) => {
     });
     // }
     // return res.status(500).json({ msg: result, success: false });
-  } catch (err) {
-    return res.status(400).json({ msg: err?.message, success: false });
-  }
+  // } catch (err) {
+  //   return res.status(400).json({ msg: err?.message, success: false });
+  // }
 };
 const downloadByOffer = async (req, res) => {
   const {filename} = req.params;

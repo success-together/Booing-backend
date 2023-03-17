@@ -15,13 +15,13 @@ ffmpeg.setFfprobePath(ffprobe.path);
 
 const tempFile = 'thumbnail_video.png';
 const generateThumb = (filename) => {
-  console.log('../'+filename)
+  console.log( __dirname+'\\..\\'+filename)
   return new Promise((resolve, reject) => {
-    ffmpeg({ source: '../'+filename })
+    ffmpeg({ source: __dirname+'\\..\\'+filename })
     .screenshots({
          count: 1,
          timestamps: ['5%'],
-         folder: __dirname+'/../tmp/',
+         folder: __dirname+'\\..\\tmp\\',
          size: '?x100',
          filename: tempFile
     })
@@ -117,15 +117,15 @@ const fragmentation = async (req, res) => {
           thumbnail = await imageThumbnail(encodedFile64, options);
           thumbnail = "data:image/"+file.mimetype+";base64, " + thumbnail;
         } else if (category === 'video') {
-          // try {
+          try {
             console.log('Before')
             await generateThumb(file.path);
             console.log('After')
-            thumbnail = fs.readFileSync(__dirname+"/../"+tempFile, { encoding: "base64" });
+            thumbnail = fs.readFileSync(__dirname+"\\..\\tmp\\"+tempFile, { encoding: "base64" });
             console.log('thumbnail')
-          // } catch {
-            // thumbnail = "";
-          // }
+          } catch {
+            thumbnail = "";
+          }
         }
         const {_id, frag} = await SendFragments(
           fragments,
