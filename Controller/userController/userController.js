@@ -1,11 +1,13 @@
 const User = require("../../Model/userModel/User");
 const bcrypt = require("bcryptjs");
+const multer = require('multer')
 const createToken = require("../../Helpers/createToken.js");
 const {
   // sendEmailRegister,
   sendMail,
 } = require("../../Helpers/nodeMailer/Mailer");
 const Wallet = require("../../Model/WalletModel/Wallet");
+const imageThumbnail = require('image-thumbnail');
 
 // User Signup
 const signup = async (req, res) => {
@@ -229,6 +231,34 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const updateProfilePic = async (req, res) => {
+  const user_id = req.params.user_id;
+  try {
+    console.log(req.file)
+    const encodedFile64 = req.file.buffer.toString("base64");
+    const options = { width: 100, responseType: 'base64', fit: 'cover' }  
+    let thumbnail = await imageThumbnail(encodedFile64, options);
+    thumbnail = `data:${req.file.mimetype};base64,${thumbnail}`;
+    User.findOneAndUpdate({_id: user_id}, {$set: {avatar: thumbnail}}).then(user => {
+      res.json({
+        success: true,
+        msg: 'success',
+        thumbnail: thumbnail
+      })
+    }).catch((err) => {
+      res.status(400).json({
+        success: false,
+        msg: err,
+      })
+    })
+  } catch {
+      res.status(400).json({
+        success: false,
+        msg: "Something went to wrong!",
+      })
+  }
+}
+
 //Update user password
 const updatePassword = async (req, res) => {
   try {
@@ -418,4 +448,5 @@ module.exports = {
   forgotPassword,
   getMembership,
   purchaseMembership,
+  updateProfilePic,
 };

@@ -2,9 +2,11 @@ const { Router } = require('express');
 const route = Router();
 const userController = require('../../Controller/userController/userController')
 const Authentification = require('../../Middleware/Authentification')
-
 const fs = require("fs");
 const path = require('path');
+const multer = require('multer');
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
 // Signup route
 route.post('/booing/signup', userController.signup)
@@ -26,6 +28,7 @@ route.post('/booing/logged-in-user/updatePassword',
 route.post('/booing/forgotPassword', userController.forgotPassword)
 route.post("/booing/logged-in-user/getMembership/:user_id", userController.getMembership);
 route.post("/booing/logged-in-user/purchaseMembership", userController.purchaseMembership);
+route.post("/booing/logged-in-user/updateProfilePic/:user_id", upload.single('file'), userController.updateProfilePic);
 
 route.get('/', async (req, res) => {
    res.send("hello")
