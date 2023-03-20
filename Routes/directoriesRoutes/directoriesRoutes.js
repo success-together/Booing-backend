@@ -19,8 +19,8 @@ router.post(
 );
 
 router.post(
-  "/booing/logged-in-user/recentDirectories",
-  directoriesController.getRecentDirectories
+  "/booing/logged-in-user/recentFiles",
+  directoriesController.recentFiles
 );
 
 router.post(

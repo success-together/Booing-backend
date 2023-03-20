@@ -14,6 +14,7 @@ const {
   getTraffic,
   receiveGiftCoin,
   sellSpace,
+  successDownload,
 } = require("../../Controller/fragmentsController/fragmentsController");
 const route = Router();
 const downloadController = require("../../Controller/downloadController/downloadController");
@@ -34,6 +35,7 @@ route.post(
 );
 route.post("/booing/logged-in-user/restoreFiles", restoreFiles);
 route.post("/booing/logged-in-user/getMyFiles", getMyFiles);
+route.post("/booing/logged-in-user/successDownload/:id", successDownload);
 // // ! to test
 route.get("/booing/logged-in-user/getDeletedFiles/:user_id", getDeletedFiles);
 route.get("/booing/logged-in-user/getUsedSpace/:user_id", getUsedStorage);

@@ -33,6 +33,7 @@ const createDirectory = async (req, res, next) => {
       type: null,
       isDirectory: true,
       created_at: new Date(),
+      openedAt: new Date()
     });
 
     if (isObjectId(dir)) {
@@ -897,7 +898,7 @@ const addFilesToDirectory = async (req, res, next) => {
   }
 };
 
-const getRecentDirectories = async (req, res, next) => {
+const recentFiles = async (req, res) => {
   const { user_id } = req.body;
 
   if (!isObjectId(user_id)) {
@@ -910,16 +911,16 @@ const getRecentDirectories = async (req, res, next) => {
   try {
     const directories = await Fragments.find({
       user_id,
-      isDirectory: true,
+      // isDirectory: true,
       isDeleted: false,
     })
       .sort("-openedAt")
-      .limit(4);
+      .limit(6);
 
     res.status(200).json({
       success: true,
       message: "data returned successfully",
-      data: directories.map((directory) => formatDirectory(directory)),
+      data: directories.map((directory) => directory),
     });
   } catch (e) {
     console.log({ error: e });
@@ -934,7 +935,7 @@ module.exports = {
   createDirectory,
   getAllDirectories,
   getDirectory,
-  getRecentDirectories,
+  recentFiles,
   deleteDirectory,
   renameDirectory,
   copyDirectory,

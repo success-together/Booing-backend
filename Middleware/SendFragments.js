@@ -13,7 +13,8 @@ const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail,
         size: size,
         type: type, //dont need
         filename: filename,
-        category: category
+        category: category,
+        openedAt: Date.now()
       });
       const { _id } = await Frags.save();
       console.log("Fragments ready to send");

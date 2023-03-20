@@ -473,6 +473,14 @@ const getDeletedFiles = async (req, res) => {
   }
 };
 
+const successDownload = async (req, res) => {
+  const id = req.params.id;
+  await Fragments.findOneAndUpdate({_id: id}, {$set: {openedAt: Date.now()}}).then(frag => {
+    console.log('file opened')
+  })
+  return res.json({success: true, msg: 'success'})
+}
+
 // get files not inside a directory
 const getMyFiles = async (req, res, next) => {
   const { user_id } = req.body;
@@ -525,4 +533,5 @@ module.exports = {
   getTraffic,
   receiveGiftCoin,
   sellSpace,
+  successDownload
 };
