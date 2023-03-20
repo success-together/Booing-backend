@@ -369,6 +369,16 @@ const purchaseMembership = async (req, res) => {
         success: false 
       });
     }
+    let space = 1;
+    if (m_id === 'Pluse-100G') space = 100;
+    if (m_id === 'Pluse-500G') space = 500;
+    if (m_id === 'Pluse-1T') space = 1000;
+    if (m_id === 'Pluse-5T') space = 5000;
+    if (m_id === 'Pluse-10T') space = 10000;
+    if (m_id === 'Pluse-50T') space = 50000;
+    if (m_id === '2TB-Booing-Space') space = 2000;
+    console.log(space)
+    user.my_cloud = space
     user.mermbership.m_id = m_id;
     user.mermbership.start = Date.now();
     if (offer) {
