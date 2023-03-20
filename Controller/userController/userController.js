@@ -207,12 +207,12 @@ const codeVerification = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     // get new info
-    const { name, phone, user_id } = req.body;
+    const { name, phone, address, birth, user_id } = req.body;
     //update
     if (name || phone) {
       const user = await User.findByIdAndUpdate(
         { _id: user_id },
-        { name, phone },
+        { name, phone, address, birth },
         { new: true }
       ).select("-password");
       //success
@@ -227,7 +227,8 @@ const updateProfile = async (req, res) => {
       success: false,
     });
   } catch (err) {
-    return res.status(500).json({ msg: err?.message, success: flase });
+    console.log(err?.message)
+    return res.status(500).json({ msg: err?.message, success: false });
   }
 };
 

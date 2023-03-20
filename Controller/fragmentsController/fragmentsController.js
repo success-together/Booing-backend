@@ -32,7 +32,7 @@ const getUsedStorage = async (req, res) => {
 const checkAutoDeleteFile = async (req, res) => {
   const {user_id} = req.params;
   try {
-    const files = await Fragments.find({user_id: user_id, isDeleted: true});
+    const files = await Fragments.find({user_id: user_id, isDeleted: true, isDirectory: false});
     if (files.length) {
       let space = {};
       let mySpace = 0;
@@ -52,16 +52,18 @@ const checkAutoDeleteFile = async (req, res) => {
         }
       }));
       if (mySpace) {
+        console.log(mySpace)
         socket.deleteFileFromDevices(deleteObj);
+        console.log(space)
         for (let key in space) {
           await User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: (space[key]*-1)}});
         }
         await User.findOneAndUpdate({_id: user_id}, {$inc:{used_mycloud: (mySpace*-1)}});
       }
-      return res.status(200).json({
-        status: "success"
-      });
     }
+    return res.status(200).json({
+      status: "success"
+    });
   } catch {
     return res.status(500).json({
       status: "fail",

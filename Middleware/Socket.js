@@ -31,6 +31,7 @@ const socketServer = {
 			})
 			socket.on('joinUser', (data) => {
 				console.log("new mobile device connected.. ", data.user_id)
+				console.log(this.deleteFile)
 				socket.user_id = data.user_id;
 				this.users[data.user_id] = {id: socket.id, state: 'online', update: Date.now(), device: 'mobile'};
 				User.findOneAndUpdate({_id: data.user_id}, {is_online: true}).then(user => {

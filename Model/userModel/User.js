@@ -18,7 +18,12 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-
+  birth: {
+    type: Date
+  },
+  address: {
+    type: String
+  },
   socialMedia_ID: {
     type: String,
   },
