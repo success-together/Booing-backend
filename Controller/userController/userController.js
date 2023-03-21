@@ -416,7 +416,7 @@ const purchaseMembership = async (req, res) => {
               amount: amount*50000000,
               before: wallet.amount,
               after: wallet.amount,
-              info: "",
+              info: "You purchased " + m_id,
             });
             wallet.updated_at = Date.now();
             wallet.save().then(async success => {
@@ -437,10 +437,6 @@ const purchaseMembership = async (req, res) => {
             })
           }
         })      
-      return res.status(200).json({
-        msg: "Purchase completed!",
-        success: true,
-      });
     }).catch(err => {
       console.log(err);
       return res.status(500).json({ msg: err.message, success: false });
