@@ -154,7 +154,7 @@ const getUserDevices = async (req, res) => {
           msg: "error while fetching devices, no user_id found.",
         });
 
-    const user = await User.findOne({ user_id });
+    const user = await User.findOne({ _id: user_id });
     if (!user)
       return res
         .status(400)
