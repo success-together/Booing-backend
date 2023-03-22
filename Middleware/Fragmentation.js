@@ -117,15 +117,15 @@ const fragmentation = async (req, res) => {
           thumbnail = await imageThumbnail(encodedFile64, options);
           thumbnail = "data:"+file.mimetype+";base64, " + thumbnail;
         } else if (category === 'video') {
-          // try {
+          try {
             console.log('Before')
             await generateThumb(file.path);
             console.log('After')
             thumbnail = "data:image/png;base64, " + fs.readFileSync(__dirname+"/../tmp/"+tempFile, { encoding: "base64" });
             console.log('thumbnail')
-          // } catch {
-            // thumbnail = "";
-          // }
+          } catch {
+            thumbnail = "";
+          }
         }
         const {_id, frag} = await SendFragments(
           fragments,
