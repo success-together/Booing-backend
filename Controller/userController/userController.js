@@ -145,6 +145,9 @@ const signin = async (req, res) => {
 				.json({ msg: "Incorrect password", success: false });
 		}
 		if (user.accountVerified === false) {
+			let text =
+				"This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
+			sendMail(user.email, " Confirm your email adress. ", text, user.code);			
 			return res
 				.status(400)
 				.json({ msg: "Account not verified", user_id: user._id, success: false });
@@ -300,6 +303,21 @@ const updatePassword = async (req, res) => {
 	}
 };
 
+const resendCode = async (req, res) => {
+	const { user_id } = req.body;
+
+	let user = await User.findOne({ _id: user_id });
+	if (user) {
+		let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
+		sendMail(user.email, " Confirm your email adress. ", text, user.code);		
+		return res
+			.status(200)
+			.json({ msg: "Code sent succussefuly, check your email .", success: true });		
+	} else {
+		res.status(500).json({ msg: err.message, success: false });
+	}
+}
+
 const forgotPassword = async (req, res) => {
 	try {
 		// get email
@@ -370,4 +388,5 @@ module.exports = {
 	forgotPassword,
 	getMembership,
 	updateProfilePic,
+	resendCode,
 };
