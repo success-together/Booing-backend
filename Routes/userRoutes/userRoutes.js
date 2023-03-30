@@ -27,7 +27,6 @@ route.post('/booing/logged-in-user/updatePassword',
 // Forgot password
 route.post('/booing/forgotPassword', userController.forgotPassword)
 route.post("/booing/logged-in-user/getMembership/:user_id", userController.getMembership);
-route.post("/booing/logged-in-user/purchaseMembership", userController.purchaseMembership);
 route.post("/booing/logged-in-user/updateProfilePic/:user_id", upload.single('file'), userController.updateProfilePic);
 
 route.get('/', async (req, res) => {

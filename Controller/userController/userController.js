@@ -147,7 +147,7 @@ const signin = async (req, res) => {
 		if (user.accountVerified === false) {
 			return res
 				.status(400)
-				.json({ msg: "Account not verified", success: false });
+				.json({ msg: "Account not verified", user_id: user._id, success: false });
 		}
 		const signinToken = createToken.signinToken({ id: user._id });
 		user = await User.findOneAndUpdate(
@@ -359,93 +359,7 @@ const getMembership = async (req, res) => {
 		return res.status(500).json({ msg: err.message, success: false });
 	}
 }
-const purchaseMembership = async (req, res) => {
-	try {
-		const { m_id, quantity, isMonth, user_id, offer, amount } = req.body; 
-		let user = await User.findOne({ _id: user_id });
-		if (!user) {
-			return res.status(400).json({ 
-				msg: "You must be logined.", 
-				success: false 
-			});
-		}
-		let space = 1;
-		if (m_id === 'Pluse-100G') space = 100;
-		if (m_id === 'Pluse-500G') space = 500;
-		if (m_id === 'Pluse-1T') space = 1000;
-		if (m_id === 'Pluse-5T') space = 5000;
-		if (m_id === 'Pluse-10T') space = 10000;
-		if (m_id === 'Pluse-50T') space = 50000;
-		if (m_id === '2TB-Booing-Space') space = 2000;
-		console.log(space)
-		user.my_cloud = space
-		user.mermbership.m_id = m_id;
-		user.mermbership.start = Date.now();
-		if (offer) {
 
-		} else {
-			//get expire date
-				let now = new Date();
-				let day = now.getDate();
-				let month = now.getMonth() + 1;
-				let year = now.getFullYear();
-				//next date
-				let nmonth = 0;
-				let nyear = 0;
-				if (isMonth) {
-					let temp = month*1 + quantity;
-					nyear = year*1 + Math.trunc(temp/12);
-					nmonth = temp%12;
-					if (nmonth < 10)  nmonth = `0${nmonth}`; 
-				} else {
-					nyear = year*1 + quantity;
-					nmonth = month;
-				}
-			//end get expire date
-
-			user.mermbership.expire = new Date(`${nyear}-${nmonth}-${day}`).getTime();
-			user.mermbership.isMonth = isMonth;
-			user.mermbership.quantity = quantity;
-		}
-		console.log(user)
-		user.save().then( async success => {
-				await Wallet.findOne({user_id: user_id}).then(wallet => {
-					if (wallet) {
-						wallet.transactions.push({
-							status: 4,
-							amount: amount*50000000,
-							before: wallet.amount,
-							after: wallet.amount,
-							info: "You purchased " + m_id,
-						});
-						wallet.amount = amount*50000000;
-						wallet.updated_at = Date.now();
-						wallet.save().then(async success => {
-							return res.json({
-								msg: `Purchase completed!`,
-								success: true,
-							})
-						}).catch(err => {
-							return res.json({
-								msg: 'Faild buying space',
-								success: false,
-							})
-						})
-					} else {
-						return res.json({
-							msg: 'Faild buying space',
-							success: false,
-						})
-					}
-				})      
-		}).catch(err => {
-			console.log(err);
-			return res.status(500).json({ msg: err.message, success: false });
-		})
-	} catch (err) {
-		return res.status(500).json({ msg: err.message, success: false });
-	}
-}
 module.exports = {
 	signup,
 	socialMediaSignup,
@@ -455,6 +369,5 @@ module.exports = {
 	updatePassword,
 	forgotPassword,
 	getMembership,
-	purchaseMembership,
 	updateProfilePic,
 };

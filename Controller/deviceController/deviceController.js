@@ -155,6 +155,7 @@ const getUserDevices = async (req, res) => {
         });
 
     const user = await User.findOne({ _id: user_id });
+    console.log(user);
     if (!user)
       return res
         .status(400)
@@ -165,6 +166,7 @@ const getUserDevices = async (req, res) => {
 
   
       let dev = await Device.find({ _id: { $in: user.devices } });  
+    console.log(dev);
     if (dev) {
       return res
         .status(200)
