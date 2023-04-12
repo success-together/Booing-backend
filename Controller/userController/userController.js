@@ -289,13 +289,13 @@ const updatePassword = async (req, res) => {
 			} else {
 				let code = Math.floor(Math.random() * 9000 + 1000);
 				//update user code
-				user = await User.findOneAndUpdate(
-					{ email: email },
-					{ code: code, accountVerified: false },
+				updated_user = await User.findOneAndUpdate(
+					{ _id: user_id },
+					{ code: code },
 					{ new: true }
 				).select("-password");
 				let text = "This is an email to confirm your request to update your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your update operation.";
-				sendMail(email, " Update Password. ", text, code);
+				sendMail(updated_user.email, " Update Password. ", text, code);
 			}
 
 		}
@@ -315,7 +315,6 @@ const updatePassword = async (req, res) => {
 		return res.status(500).json({ msg: err?.message, success: false });
 	}
 };
-
 
 const resendCode = async (req, res) => {
 	const { user_id } = req.body;

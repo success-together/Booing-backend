@@ -22,7 +22,8 @@ const generateThumb = (filename) => {
          count: 1,
          timestamps: ['5%'],
          folder: __dirname+'/../tmp/',
-         size: '?x100',
+         size: '?x200',
+         quality: 10,
          filename: tempFile
     })
     .on('error', function (error) {
@@ -113,16 +114,13 @@ const fragmentation = async (req, res) => {
         const category = getCategoryByType(file.mimetype);
         let thumbnail = "";
         if (category==="image") {
-          let options = { width: 100, responseType: 'base64', fit: 'cover' }  
+          let options = { width: 200, responseType: 'base64', fit: 'cover', jpegOptions: { force:true, quality: 100 } }  
           thumbnail = await imageThumbnail(encodedFile64, options);
-          thumbnail = "data:"+file.mimetype+";base64, " + thumbnail;
+          thumbnail = "data:image/jpeg;base64, " + thumbnail;
         } else if (category === 'video') {
           try {
-            console.log('Before')
             await generateThumb(file.path);
-            console.log('After')
             thumbnail = "data:image/png;base64, " + fs.readFileSync(__dirname+"/../tmp/"+tempFile, { encoding: "base64" });
-            console.log('thumbnail')
           } catch {
             thumbnail = "";
           }

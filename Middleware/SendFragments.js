@@ -17,9 +17,13 @@ const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail,
         openedAt: Date.now()
       });
       const { _id } = await Frags.save();
+
       console.log("Fragments ready to send");
+
       const space = await socket.sendFragment(newFrags, user_id);
+
       console.log("+occupy_cloud -> ", space)
+
       //increase occpyCloud space
       for (let key in space) {
         User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: space[key], traffic_cloud: space[key]}}).then(user => {
@@ -29,8 +33,10 @@ const SendFragments = async (newFrags, user_id, type, size, filename, thumbnail,
           }
         })
       }
+
       //increase myCloud space
       const user = await User.findOneAndUpdate({_id: user_id}, {$inc: {used_mycloud: size}});
+      
       return {_id, frag};
     }
 };

@@ -35,8 +35,9 @@ const createDirectory = async (req, res, next) => {
       created_at: new Date(),
       openedAt: new Date()
     });
-
-    if (isObjectId(dir)) {
+    if (dir === 'top') {
+      directory.type = 'top';
+    } else if (isObjectId(dir)) {
       directory.directory = dir;
     }
 
@@ -99,6 +100,7 @@ const getAllDirectories = async (req, res, next) => {
       isDirectory: true,
       isDeleted: false,
       directory: null,
+      type: null
     });
 
     res.status(200).json({
@@ -125,47 +127,67 @@ const getDirectory = async (req, res, next) => {
       message: "you must be logged in !",
     });
   }
-
   try {
-    if (!isObjectId(id)) {
+    if (id !== 'top' && !isObjectId(id)) {
       return res.status(403).json({
         success: false,
         message: "invalid directory id",
       });
     }
+    if (id === 'top') {
+      console.log(id)
+      const directories = await Fragments.find({type: 'top'});
+      console.log(directories)
+      const dirs = [];
+      for (var i = 0; i < directories.length; i++) {
+        dirs.push({
+          id: directories[i]._id,
+          name: directories[i]._doc.updates[0].fileName,
+          createdAt: directories[i]._doc.created_at,
+          isDirectory: directories[i]._doc.isDirectory,
+          type: directories[i]._doc.type,  
+          count: directories[i]._doc.items.length    
+        })
+      }
+      res.status(200).json({
+        success: true,
+        data: dirs,
+      });      
+    } else {
+      const directory = await Fragments.findById(id);
 
-    const directory = await Fragments.findById(id);
+      if (!directory) {
 
-    if (!directory) {
+        return res.status(403).json({
+          success: false,
 
-      return res.status(403).json({
-        success: false,
+          message: "no directory with the given id",
+        });
+      }
 
-        message: "no directory with the given id",
+      if (!directory.isDirectory) {
+        return res.status(403).json({
+          status: "fail",
+          message: "the given id is not a folder",
+        });
+      }
+
+      if (directory.user_id?.toString() !== user_id) {
+        return res.status(403).json({
+          status: "fail",
+          message: "you dont have permission to view this folder",
+        });
+      }
+
+      directory.openedAt = new Date();
+      await directory.save({ validateBeforeSave: true });
+
+      res.status(200).json({
+        success: true,
+        data: formatDirectory(directory, true),
       });
+
     }
-
-    if (!directory.isDirectory) {
-      return res.status(403).json({
-        status: "fail",
-        message: "the given id is not a folder",
-      });
-    }
-
-    if (directory.user_id?.toString() !== user_id) {
-      return res.status(403).json({
-        status: "fail",
-        message: "you dont have permission to view this folder",
-      });
-    }
-
-    directory.openedAt = new Date();
-    await directory.save({ validateBeforeSave: true });
-
-    res.status(200).json({
-      success: true,
-      data: formatDirectory(directory, true),
-    });
   } catch (e) {
     console.log({ error: e });
     res.status(500).json({
