@@ -23,6 +23,10 @@ route.get(
   "/booing/logged-in-user/downloadFile/:user_id/:type",
   downloadController.download
 );
+route.post(
+  "/booing/logged-in-user/searchFile",
+  downloadController.search
+);
 
 route.post("/booing/logged-in-user/downloadByOffer/:filename", downloadController.downloadByOffer);
 // route.post("/booing/logged-in-user/checkForDownloads", checkForDownloads);

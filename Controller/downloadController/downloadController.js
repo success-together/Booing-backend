@@ -54,7 +54,7 @@ const download = async (req, res) => {
   // try {
     const user_id = req.params.user_id;
     const type = req.params.type;
-    if (!Object.keys(types).includes(type)) {
+    if (!Object.keys(types).includes(type) && type !== 'all') {
       return res.status(403).json({ msg: "invalid type", success: false });
     }
     if (!isObjectId(user_id)) {
@@ -99,6 +99,57 @@ const download = async (req, res) => {
   //   return res.status(400).json({ msg: err?.message, success: false });
   // }
 };
+
+//Download File
+const search = async (req, res) => {
+  // try {
+    const {user_id, search} = req.body;
+    if (!isObjectId(user_id)) {
+      return res.status(400).json({ msg: "user not found", success: false });
+    }
+    if (!search) {
+      return res.status(400).json({ msg: "please input search value", success: false });
+    }
+    const fragments = await Fragments.find({
+      user_id: user_id,
+      isDeleted: false,
+      isDirectory: false,
+      filename: {$regex: new RegExp("" + search + "")}
+    });
+
+    console.log(fragments.length)
+    if (fragments.length == 0)
+      return res.status(400).json({ msg: "no fragment found", success: false });
+
+    let fileBase64 = "";
+    let extension = "";
+    // let result = false;
+    let fileName = "";
+    let base64 = [];
+
+    fragments.forEach((item) => {
+      base64.push({
+        uri: '',
+        updates: item.updates,
+        id: item._id,
+        name: item.filename,
+        thumbnail: item.thumbnail,
+        type: item.type,
+        category: item.category,
+        createdAt: item.created_at,
+      });
+    });
+    return res.status(200).json({
+      msg: "file downloaded successfully",
+      success: true,
+      data: base64,
+    });
+    // }
+    // return res.status(500).json({ msg: result, success: false });
+  // } catch (err) {
+  //   return res.status(400).json({ msg: err?.message, success: false });
+  // }
+};
 const downloadByOffer = async (req, res) => {
   const {filename} = req.params;
   let encodedFile64 = fs.readFileSync(__dirname + '/../../uploadedFiles/'+filename, { encoding: "base64" });
@@ -108,4 +159,4 @@ const downloadByOffer = async (req, res) => {
     data: encodedFile64
   })
 }
-module.exports = { download, downloadByOffer };
+module.exports = { download, downloadByOffer, search };
