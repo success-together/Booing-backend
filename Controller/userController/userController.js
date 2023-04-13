@@ -291,9 +291,10 @@ const updatePassword = async (req, res) => {
 				//update user code
 				updated_user = await User.findOneAndUpdate(
 					{ _id: user_id },
-					{ code: code },
+					{ accountVerified: false, code: code },
 					{ new: true }
 				).select("-password");
+				console.log(code)
 				let text = "This is an email to confirm your request to update your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your update operation.";
 				sendMail(updated_user.email, " Update Password. ", text, code);
 			}
