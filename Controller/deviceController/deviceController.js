@@ -1,5 +1,7 @@
 const Device = require("../../Model/deviceModel/Device");
 const User = require("../../Model/userModel/User");
+const Fragments = require("../../Model/fragmentsModel/Fragments");
+const File = require("../../Model/fileModel/File");
 
 const addDevice = async (req, res) => {
   const { device_ref, created_at, type, name, user_id, lat, lon } = req.body;
@@ -246,6 +248,42 @@ const updateGeoLocation = async (req, res) => {
   }
 };
 
+const checkFragments = async (req, res) => {
+  const {user_id} = req.params;
+  console.log('checkFragments', user_id)
+  try {
+    const fragments = await File
+      .find({"device.device_id": user_id})
+    return res.status(200).json({
+      msg: `Your device have to be ${fragments.length} fragments.`,
+      data: fragments
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error?.message,
+    });
+  }
+}
+// const cart_get = (req, res) => {
+//   Cart.find()
+//     .populate("items.item") //access to items ref from product
+//     .then((data) => {
+//       return res.status(200).send({
+//         status: "OK",
+//         message: "Get Users Carts Successfully",
+//         content: data,
+//       });
+//     })
+//     .catch((err) => {
+//       return res.status(400).send({
+//         status: "ERR_SERVER",
+//         message: err.message,
+//         content: null,
+//       });
+//     });
+// };
+
 module.exports = {
   addDevice,
   getDevices,
@@ -253,4 +291,5 @@ module.exports = {
   getUserDevices,
   checkAvailability,
   updateGeoLocation,
+  checkFragments
 };

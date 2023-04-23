@@ -1,10 +1,12 @@
 const Fragments = require("../../Model/fragmentsModel/Fragments");
 const User = require('../../Model/userModel/User');
 const Wallet = require('../../Model/WalletModel/Wallet');
+const File = require("../../Model/fileModel/File");
 const mongoose = require("mongoose");
 const isArray = require("../../Helpers/isArray");
 const isObjectId = require("../../Helpers/isObjectId");
 const socket = require("../../Middleware/Socket");
+
 const getUsedStorage = async (req, res) => {
   const { user_id } = req.params;
   try {
@@ -32,7 +34,7 @@ const getUsedStorage = async (req, res) => {
 const checkAutoDeleteFile = async (req, res) => {
   const {user_id} = req.params;
   try {
-    const files = await Fragments.find({user_id: user_id, isDeleted: true, isDirectory: false});
+    const files = await Fragments.find({user_id: user_id, isDeleted: true, isDirectory: false}).populate('updates');;
     if (files.length) {
       let space = {};
       let mySpace = 0;
@@ -226,7 +228,7 @@ const checkForDownloads = async (req, res) => {
 
     const fragments = await Fragments.find({
       "updates.isDownloaded": false,
-    });
+    }).populate('updates');
 
     if (!fragments)
       return res
@@ -268,7 +270,7 @@ const checkForUploads = async (req, res) => {
 
     const fragments = await Fragments.find({
       "updates.isUploaded": false,
-    });
+    }).populate('updates');
 
     if (!fragments)
       return res
@@ -340,7 +342,7 @@ const deleteFilesPermanently = async (req, res) => {
       });
     }
 
-    const files = await Fragments.find({ _id: { $in: files_ids } });
+    const files = await Fragments.find({ _id: { $in: files_ids } }).populate('updates');
 
     if (files.some((file) => file.user_id.toString() !== user_id)) {
       return res.status(401).json({
@@ -350,10 +352,13 @@ const deleteFilesPermanently = async (req, res) => {
     }
     let space = {};
     let mySpace = 0;
-    let deleteObj = {}
+    let deleteObj = {};
+    let deleteFrag = []
     await Promise.all(files.map((file) => {
       mySpace += file.size*1;
+      console.log(file['updates'][0]['devices'])
       for (var i = 0; i < file['updates'].length; i++) {
+        deleteFrag.push(file['updates'][i]['_id']);
         for (var j = 0; j < file['updates'][j]['devices'].length; j++) {
           if (space[file['updates'][i]['devices'][j]['device_id']]) space[file['updates'][i]['devices'][j]['device_id']] += file['updates'][i].size;
           else space[file['updates'][i]['devices'][j]['device_id']] = file['updates'][i].size;
@@ -363,6 +368,10 @@ const deleteFilesPermanently = async (req, res) => {
       }
       return file.delete();
     }));
+    console.log(deleteFrag)
+    File.deleteMany({ _id: { $in: deleteFrag }}).then(aaa=>{
+      console.log(aaa)
+    })
     socket.deleteFileFromDevices(deleteObj);
     for (let key in space) {
       await User.findOneAndUpdate({_id: key}, {$inc:{used_occupycloud: (space[key]*-1)}});
@@ -436,7 +445,7 @@ const getDeletedFiles = async (req, res) => {
     if (!isObjectId(user_id)) {
       return res.status(400).json({ msg: "user not found", success: false });
     }
-    await Fragments.find({ isDeleted: true, user_id: user_id })
+    await Fragments.find({ isDeleted: true, user_id: user_id }).populate('updates')
       .then((fragments) => {
         if (fragments) {
           let fileBase64 = "";
@@ -500,7 +509,7 @@ const getMyFiles = async (req, res, next) => {
         isDeleted: false,
         directory: null,
         user_id,
-      })
+      }).populate('updates')
     ).map((file) => ({
       id: file._id,
       name: file.updates[0].fileName,

@@ -3,24 +3,29 @@ let mongoose = require("mongoose");
 
 const fileSchema = new Schema({
   user_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User'
   },
-  realName: {
-    type: String,
+  fragmentID: {
+    type: Number, 
+    required: true
   },
-  extension: {
-    type: String,
+  fileName: {
+    type: String, 
+    required: true
   },
-  fragments: {
-    type: Array,
+  uid: {
+    type: String, 
+    required: true
   },
-  created_at: {
-    type: Date,
-    default: Date.now
+  size: {
+    type: Number, 
+    required: true
   },
-
+  devices: {
+    type: Array
+  }
 });
 
-const File = model("File", deviceSchema);
+const File = model("File", fileSchema);
 module.exports = File;

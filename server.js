@@ -49,7 +49,10 @@ mongoose.connect(
     useUnifiedTopology: true,
   },
   () => {
-    console.log("Successufully connected to database .");
+    // console.log("Successufully connected to database .");
+    // Fragments.find({'updates.devices.device_id': '640f882ff4ba6d7236a3cd24'}).then(result=> {
+    //   console.log(result)
+    // })
     const PORT = process.env.PORT || 3002;
     const httpServer = createServer(app);
     socketServer.init(httpServer);

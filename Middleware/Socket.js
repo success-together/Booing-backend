@@ -123,8 +123,6 @@ const socketServer = {
 			}
 		}
 		return totalSpace;
-		//TO DO
-		//send fragment to each device.
 	},
 	getDevices: function() {
 		const devices = [];

@@ -27,5 +27,10 @@ route.post(
   //Authentification ,
   deviceController.updateGeoLocation
 );
+route.get(
+  "/booing/logged-in-user/checkFragments/:user_id",
+  //Authentification ,
+  deviceController.checkFragments
+);
 
 module.exports = route;

@@ -25,11 +25,7 @@ const createDirectory = async (req, res, next) => {
   try {
     const directory = new Fragments({
       user_id,
-      updates: [
-        {
-          fileName: name,
-        },
-      ],
+      filename: name,
       type: null,
       isDirectory: true,
       created_at: new Date(),
@@ -60,7 +56,7 @@ const createDirectory = async (req, res, next) => {
 const formatDirectory = (directory, extendedItems) => {
   return {
     id: directory._id,
-    name: directory._doc.updates[0].fileName,
+    name: directory.filename,
     createdAt: directory._doc.created_at,
     isDirectory: directory._doc.isDirectory,
     type: directory._doc.type,
@@ -70,7 +66,7 @@ const formatDirectory = (directory, extendedItems) => {
             ? formatDirectory(subDirectory, false)
             : {
                 id: subDirectory._id,
-                name: subDirectory._doc.updates[0].fileName,
+                name: subDirectory.filename,
                 createdAt: subDirectory._doc.created_at,
                 isDirectory: false,
                 type: subDirectory._doc.type,
@@ -135,14 +131,12 @@ const getDirectory = async (req, res, next) => {
       });
     }
     if (id === 'top') {
-      console.log(id)
       const directories = await Fragments.find({type: 'top'});
-      console.log(directories)
       const dirs = [];
       for (var i = 0; i < directories.length; i++) {
         dirs.push({
           id: directories[i]._id,
-          name: directories[i]._doc.updates[0].fileName,
+          name: directories[i].filename,
           createdAt: directories[i]._doc.created_at,
           isDirectory: directories[i]._doc.isDirectory,
           type: directories[i]._doc.type,  
@@ -337,9 +331,9 @@ const getDirectory = async (req, res, next) => {
 //     if (
 //       directory.updates &&
 //       directory.updates[0] &&
-//       directory.updates[0].fileName
+//       directory.filename
 //     ) {
-//       directory.updates[0].fileName = newName;
+//       directory.filename = newName;
 //     } else {
 //       directory.updates = [];
 //       directory.updates.unshift({ fileName: newName });
@@ -363,7 +357,7 @@ const getDirectory = async (req, res, next) => {
 //   }
 // };
 
-// const getItemName = (dir) => dir.updates[0].fileName;
+// const getItemName = (dir) => dir.filename;
 
 // const getCopyName = async (item) => {
 //   const itemName = getItemName(item);
@@ -394,8 +388,8 @@ const getDirectory = async (req, res, next) => {
 //   const copyName = await getCopyName(directory);
 //   const copy = new Fragments({ ...directory.toObject(), _id: undefined });
 
-//   if (copy.updates && copy.updates[0] && copy.updates[0].fileName) {
-//     copy.updates[0].fileName = copyName;
+//   if (copy.updates && copy.updates[0] && copy.filename) {
+//     copy.filename = copyName;
 //   } else {
 //     copy.updates = [];
 //     copy.updates.unshift({ fileName: copyName });
@@ -686,17 +680,8 @@ const renameDirectory = async (req, res, next) => {
         message: "you dont have permission to rename this folder",
       });
     }
-
-    if (
-      directory.updates &&
-      directory.updates[0] &&
-      directory.updates[0].fileName
-    ) {
-      directory.updates[0].fileName = newName;
-    } else {
-      directory.updates = [];
-      directory.updates.unshift({ fileName: newName });
-    }
+    directory.filename = newName;
+  
 
     directory.markModified("updates");
     await directory.save();
@@ -716,7 +701,7 @@ const renameDirectory = async (req, res, next) => {
   }
 };
 
-const getItemName = (dir) => dir.updates[0].fileName;
+const getItemName = (dir) => dir.filename;
 
 const getCopyName = async (item) => {
   const itemName = getItemName(item);
@@ -747,12 +732,8 @@ const deepDirCopy = async (directory, parentId) => {
   const copyName = await getCopyName(directory);
   const copy = new Fragments({ ...directory.toObject(), _id: undefined });
 
-  if (copy.updates && copy.updates[0] && copy.updates[0].fileName) {
-    copy.updates[0].fileName = copyName;
-  } else {
-    copy.updates = [];
-    copy.updates.unshift({ fileName: copyName });
-  }
+  copy.filename = copyName;
+
 
   copy.directory = parentId;
 
@@ -935,7 +916,7 @@ const recentFiles = async (req, res) => {
       user_id,
       // isDirectory: true,
       isDeleted: false,
-    })
+    }).populate('updates')
       .sort("-openedAt")
       .limit(6);
 

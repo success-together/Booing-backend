@@ -22,8 +22,7 @@ const generateThumb = (filename) => {
          count: 1,
          timestamps: ['5%'],
          folder: __dirname+'/../tmp/',
-         size: '?x200',
-         quality: 10,
+         size: '?x100',
          filename: tempFile
     })
     .on('error', function (error) {
@@ -110,13 +109,12 @@ const fragmentation = async (req, res) => {
         fragments[fragments.length - 1].fragment = fragments[fragments.length - 1].fragment + encodedFile64.slice(i, lengthFile64);
         fragments[fragments.length - 1].size = fragments[fragments.length - 1].fragment.length;
 
-        console.log("file fragments : ", fragments.length)
         const category = getCategoryByType(file.mimetype);
         let thumbnail = "";
         if (category==="image") {
-          let options = { width: 200, responseType: 'base64', fit: 'cover', jpegOptions: { force:true, quality: 100 } }  
+          let options = { width: 100, responseType: 'base64', fit: 'cover' }  
           thumbnail = await imageThumbnail(encodedFile64, options);
-          thumbnail = "data:image/jpeg;base64, " + thumbnail;
+          thumbnail = "data:"+file.mimetype+";base64, " + thumbnail;
         } else if (category === 'video') {
           try {
             await generateThumb(file.path);
@@ -134,7 +132,6 @@ const fragmentation = async (req, res) => {
           thumbnail,
           category
         );
-        console.log(file.path)
         await fs.unlinkSync(file.path);
         return { id: _id, name: file.filename, updates: frag, thumbnail: thumbnail };
       })

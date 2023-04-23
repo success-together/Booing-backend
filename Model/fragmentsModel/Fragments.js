@@ -9,9 +9,12 @@ const fragmentsSchema = new Schema({
   updated_at: {
     type: Date,
   },
-  updates: {
-    type: Array,
-  },
+  updates: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "File",
+    }
+  ],
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
