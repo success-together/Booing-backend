@@ -182,20 +182,6 @@ const getUserDevices = async (req, res) => {
     res?.status(500).json({ success: false, msg: err.message });
   }
 };
-// await Device.find()
-//   .then((devices) => {
-//     if (devices)
-//       return res
-//         .status(200)
-//         .json({ success: true, data: devices, msg: "sucess" });
-//     else
-//       return res
-//         .status(400)
-//         .json({ success: false, msg: "error while fetching devices" });
-//   })
-//   .catch((err) =>
-//     res.status(400).json({ success: false, msg: err?.message })
-//   );
 
 const checkAvailability = async (req, res) => {
   const { device_ref } = req.body;
@@ -253,7 +239,13 @@ const checkFragments = async (req, res) => {
   console.log('checkFragments', user_id)
   try {
     const fragments = await File
-      .find({"device.device_id": user_id})
+      .find({
+        "devices": {
+          "$elemMatch": {
+            "device_id": user_id
+          }
+        }
+      })
     return res.status(200).json({
       msg: `Your device have to be ${fragments.length} fragments.`,
       data: fragments
@@ -265,24 +257,15 @@ const checkFragments = async (req, res) => {
     });
   }
 }
-// const cart_get = (req, res) => {
-//   Cart.find()
-//     .populate("items.item") //access to items ref from product
-//     .then((data) => {
-//       return res.status(200).send({
-//         status: "OK",
-//         message: "Get Users Carts Successfully",
-//         content: data,
-//       });
-//     })
-//     .catch((err) => {
-//       return res.status(400).send({
-//         status: "ERR_SERVER",
-//         message: err.message,
-//         content: null,
-//       });
-//     });
-// };
+
+// db.getCollection("files").find({
+//   "devices": {
+//     "$elemMatch": {
+//       "device_id": ObjectId("6446a82fee84415a3dd4807b")
+//     }
+//   }
+// })
+
 
 module.exports = {
   addDevice,

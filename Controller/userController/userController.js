@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const multer = require('multer')
 const createToken = require("../../Helpers/createToken.js");
 const {
-	// sendEmailRegister,
 	sendMail,
 } = require("../../Helpers/nodeMailer/Mailer");
 const Wallet = require("../../Model/WalletModel/Wallet");
@@ -84,13 +83,6 @@ const socialMediaSignup = async (req, res) => {
 		//Check if the email already exists
 		const findUser = await User.findOne({ email });
 		if (!findUser) {
-			// return res.status(400).json({ msg: "This email already exists .", success: false });
-
-			//hash password
-			// const salt = await bcrypt.genSalt();
-			// const hashPassword = await bcrypt.hash(password, salt);
-			// Create a new User
-			// let code = Math.floor(Math.random() * 9000 + 1000);
 
 			// Save the New User into the Database
 			await user.save().then(() => {
@@ -99,9 +91,6 @@ const socialMediaSignup = async (req, res) => {
 				const wallet = new Wallet({ user_id: user._id });
 				wallet.save();
 
-				//Return success message and the user
-				// let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation."
-				// sendMail(email, " Confirm your email adress. ", text, code)
 				const signinToken = createToken.signinToken({ id: user._id });
 				return res.status(200).json({
 					msg: "User Login does successfully.",

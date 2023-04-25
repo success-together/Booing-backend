@@ -155,6 +155,7 @@ const sellSpace = async (req, res) => {
               status: 1,
               amount: 65000*quantity,
               before: wallet.amount,
+              quantity: quantity,
               after: wallet.amount+65000*quantity,
               info: `You selled ${quantity}GB space and got ${65000*quantity} Boo in your wallet.`
             });

@@ -3,7 +3,6 @@ const upload = async (req, res, next) => {
     if (req.files) {
       next();
       console.log(req.files)
-      // res.status(200).json({ msg: "Upload failed.", success: true });
     } else {
       return res.status(400).json({ msg: "Upload failed.", success: false });
     }
