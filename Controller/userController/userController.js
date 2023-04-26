@@ -50,7 +50,7 @@ const signup = async (req, res) => {
 		const wallet = new Wallet({ user_id: savedUser._id });
 		await wallet.save();
 		return res.status(200).json({
-			msg: "Code sent succussefuly, check your email .",
+			msg: "Code sent successefully, check your email .",
 			success: true,
 			data: user,
 		});
@@ -69,7 +69,7 @@ const socialMediaSignup = async (req, res) => {
 		if (!name || !email || !socialMedia_ID) {
 			return res
 				.status(400)
-				.json({ msg: "Fill in all the fields please .", success: false });
+				.json({ msg: "Fill all the fields please .", success: false });
 		}
 		// Initiate User information
 		const user = new User({
@@ -148,7 +148,7 @@ const signin = async (req, res) => {
 		).select("-password");
 		// signing success
 		return res.status(200).json({
-			msg: "User Singin does successuflly .",
+			msg: "User Sing in does successfully .",
 			success: true,
 			data: { user, signinToken },
 		});
@@ -177,7 +177,7 @@ const codeVerification = async (req, res) => {
 			).select("-password");
 			return res
 				.status(200)
-				.json({ msg: "Signup code matchs .", success: true, data: user });
+				.json({ msg: "Signup code verified! You can now proceed to login with your email and password", success: true, data: user });
 		} else if (code === user.code && !isSignup) {
 			user = await User.findOneAndUpdate(
 				{ _id: user_id },
@@ -186,9 +186,9 @@ const codeVerification = async (req, res) => {
 			);
 			return res
 				.status(200)
-				.json({ msg: "Reset code matchs .", success: true, data: user });
+				.json({ msg: "Reset code verified! You can now proceed to login with your new password", success: true, data: user });
 		}
-		return res.status(400).json({ msg: "Incorrect code", success: false });
+		return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
 	} catch (err) {
 		//Return errors
 		res.status(500).json({ msg: err?.message, success: false });
@@ -209,13 +209,13 @@ const updateProfile = async (req, res) => {
 			).select("-password");
 			//success
 			return res.status(200).json({
-				msg: "Profile updates does successfully.",
+				msg: "Profile updates were successful! Your changes have been saved.",
 				success: true,
 				data: user,
 			});
 		}
 		return res.status(400).json({
-			msg: "No data found. failed to update profile.",
+			msg: "We apologize, but no data was found to update your profile. Please try again.",
 			success: false,
 		});
 	} catch (err) {
@@ -274,7 +274,7 @@ const updatePassword = async (req, res) => {
 			if (!passwordCheck) {
 				return res
 					.status(400)
-					.json({ msg: "Current password doesn't match.", success: false });
+					.json({ msg: "Sorry, the current password you entered does not match our records. Please try again with the correct password or reset your password if you have forgotten it.", success: false });
 			} else {
 				let code = Math.floor(Math.random() * 9000 + 1000);
 				//update user code
@@ -315,7 +315,7 @@ const resendCode = async (req, res) => {
 		sendMail(user.email, " Confirm your email adress. ", text, user.code);		
 		return res
 			.status(200)
-			.json({ msg: "Code sent succussefuly, check your email .", success: true });		
+			.json({ msg: "Code sent successfully, check your email .", success: true });		
 	} else {
 		res.status(500).json({ msg: err.message, success: false });
 	}

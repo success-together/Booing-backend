@@ -159,7 +159,7 @@ const sellSpace = async (req, res) => {
               after: wallet.amount+65000*quantity,
               info: `You selled ${quantity}GB space and got ${65000*quantity} Boo in your wallet.`
             });
-            console.log(wallet.transactions, quantity)
+            console.log(wallet.transactions)
             wallet.amount += 65000*quantity;
             wallet.updated_at = Date.now();
             wallet.save().then(async success => {
