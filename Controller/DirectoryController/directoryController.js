@@ -131,7 +131,7 @@ const getDirectory = async (req, res, next) => {
       });
     }
     if (id === 'top') {
-      const directories = await Fragments.find({type: 'top'});
+      const directories = await Fragments.find({type: 'top', user_id: user_id});
       const dirs = [];
       for (var i = 0; i < directories.length; i++) {
         dirs.push({
@@ -466,7 +466,7 @@ const getCategoryInfo = async (req, res) => {
   }
 
   const categoryInfo = await Fragments.aggregate([
-    { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false } },
+    { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false, type: {$ne: 'top'} } },
     { $group: {_id: "$category", updated: {$max: "$created_at"}, count: { $sum: 1} } },
   ]);
   return res.status(200).json({

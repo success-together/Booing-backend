@@ -17,14 +17,14 @@ const signup = async (req, res) => {
 		if (!name || !email || !phone || !password) {
 			return res
 				.status(400)
-				.json({ msg: "Fill in all the fields please .", success: false });
+				.json({ msg: "Fill in all the fields please.", success: false });
 		}
 		//Check if the email already exists
 		const findUser = await User.findOne({ email });
 		if (findUser) {
 			return res
 				.status(400)
-				.json({ msg: "This email already exists .", success: false });
+				.json({ msg: "This email already exists.", success: false });
 		}
 		//hash password
 		const salt = await bcrypt.genSalt();
@@ -50,7 +50,7 @@ const signup = async (req, res) => {
 		const wallet = new Wallet({ user_id: savedUser._id });
 		await wallet.save();
 		return res.status(200).json({
-			msg: "Code sent successefully, check your email .",
+			msg: "Code sent successfully, check your email.",
 			success: true,
 			data: user,
 		});
@@ -122,7 +122,7 @@ const signin = async (req, res) => {
 		let user = await User.findOne({ email });
 		if (!user) {
 			return res.status(400).json({
-				msg: "This email doesn't exist .",
+				msg: "This email doesn't exist.",
 				success: false,
 			});
 		}
@@ -148,7 +148,7 @@ const signin = async (req, res) => {
 		).select("-password");
 		// signing success
 		return res.status(200).json({
-			msg: "User Sing in does successfully .",
+			msg: "Signed in successfully!",
 			success: true,
 			data: { user, signinToken },
 		});
@@ -262,7 +262,7 @@ const updatePassword = async (req, res) => {
 		const user = await User.findById(user_id);
 
 		if (!user)
-			return res.status(400).json({ msg: "User not found .", success: false });
+			return res.status(400).json({ msg: "User not found.", success: false });
 
 		if (!isForgotPassword) {
 			//check password
@@ -315,7 +315,7 @@ const resendCode = async (req, res) => {
 		sendMail(user.email, " Confirm your email adress. ", text, user.code);		
 		return res
 			.status(200)
-			.json({ msg: "Code sent successfully, check your email .", success: true });		
+			.json({ msg: "Code sent successfully, check your email.", success: true });		
 	} else {
 		res.status(500).json({ msg: err.message, success: false });
 	}
@@ -344,7 +344,7 @@ const forgotPassword = async (req, res) => {
 			"This is an email to confirm your request to reset your password on <b>Booing</b> application. Copy the <b>code</b> below to continue your reset operation.";
 		sendMail(email, " Reset Password. ", text, code);
 		return res.status(200).json({
-			msg: "Code sent successfully, check your email .",
+			msg: "Code sent successfully, check your email.",
 			success: true,
 			data: user,
 		});
@@ -372,7 +372,7 @@ const getMembership = async (req, res) => {
 		result.left = leftMonth;
 		console.log(result)
 		return res.status(200).json({
-			msg: "Success getting Membership .",
+			msg: "Success getting Membership.",
 			success: true,
 			data: result,
 		});
