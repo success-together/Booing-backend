@@ -466,7 +466,7 @@ const getCategoryInfo = async (req, res) => {
   }
 
   const categoryInfo = await Fragments.aggregate([
-    { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false, type: {$ne: null} } },
+    { $match: { user_id: mongoose.Types.ObjectId(user_id), isDeleted: false, type: null } },
     { $group: {_id: "$category", updated: {$max: "$created_at"}, count: { $sum: 1} } },
   ]);
   return res.status(200).json({
