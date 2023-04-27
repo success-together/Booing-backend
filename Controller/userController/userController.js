@@ -17,7 +17,7 @@ const signup = async (req, res) => {
 		if (!name || !email || !phone || !password) {
 			return res
 				.status(400)
-				.json({ msg: "Fill in all the fields please.", success: false });
+				.json({ msg: "Please fill in all the required fields before proceeding.", success: false });
 		}
 		//Check if the email already exists
 		const findUser = await User.findOne({ email });
@@ -69,7 +69,7 @@ const socialMediaSignup = async (req, res) => {
 		if (!name || !email || !socialMedia_ID) {
 			return res
 				.status(400)
-				.json({ msg: "Fill all the fields please .", success: false });
+				.json({ msg: "Please fill in all the required fields before proceeding.", success: false });
 		}
 		// Initiate User information
 		const user = new User({
@@ -93,7 +93,7 @@ const socialMediaSignup = async (req, res) => {
 
 				const signinToken = createToken.signinToken({ id: user._id });
 				return res.status(200).json({
-					msg: "User Login does successfully.",
+					msg: "Welcome, signed in successfully!",
 					success: true,
 					data: { user, signinToken },
 				});
@@ -101,7 +101,7 @@ const socialMediaSignup = async (req, res) => {
 		} else {
 			const signinToken = createToken.signinToken({ id: findUser._id });
 			return res.status(200).json({
-				msg: "User already exist. Login does successfully.",
+				msg: "Signed in successfully, Welcome back!",
 				data: { user: findUser, signinToken },
 				success: true,
 			});

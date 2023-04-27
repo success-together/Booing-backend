@@ -138,7 +138,7 @@ const fragmentation = async (req, res) => {
     );
 
     res.status(200).json({
-      message: "file(s) uploaded successfully !",
+      message: "Upload successfully!",
       data: filesData,
     });
   } catch (e) {
