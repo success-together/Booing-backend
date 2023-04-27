@@ -48,7 +48,7 @@ const socketServer = {
 		    	if (this.users[data.to]) {
 			        this.io.to(this.users[data.to]['id']).emit('offer', {offer: data.offer, from: data.from, reqdata: data.reqdata})
 		    	} else {
-		    		this.io.to(this.users[data.from]['id']).emit('offline', {to: data.to})
+		    		socket.emit('offline', {to: data.to})
 		    	}
 		    })
 
@@ -66,7 +66,7 @@ const socketServer = {
 		    })
 		    socket.on('recreateOffer', (data) => {
 		    	console.log(data)
-				this.io.to(this.users[data.from]['id']).emit('recreateOfferAnswer', {filename: data.filename});
+				socket.emit('recreateOfferAnswer', {filename: data.filename});
 		    });
 		    socket.on('traffic', (data) => {
 		    	console.log(data)
