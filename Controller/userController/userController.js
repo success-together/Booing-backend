@@ -21,7 +21,7 @@ const signup = async (req, res) => {
 		}
 		//Check if the email already exists
 		const findUser = await User.findOne({ email });
-		if (findUser) {
+		if (findUser && findUser.accountVerified) {
 			return res
 				.status(400)
 				.json({ msg: "This email already exists.", success: false });
@@ -31,13 +31,23 @@ const signup = async (req, res) => {
 		const hashPassword = await bcrypt.hash(password, salt);
 		// Create a new User
 		let code = Math.floor(Math.random() * 9000 + 1000);
-		const user = new User({
-			name: name,
-			email: email,
-			phone: phone,
-			password: hashPassword,
-			code: code,
-		});
+		let user;
+		if (findUser) {
+			findUser.name = name;
+			findUser.email = email;
+			findUser.phone = phone;
+			findUser.password = password;
+			findUser.code = code;
+			user = findUser;
+		} else {
+			user = new User({
+				name: name,
+				email: email,
+				phone: phone,
+				password: hashPassword,
+				code: code,
+			});
+		}
 
 		// Save the New User into the Database
 		const savedUser = await user.save();
@@ -59,6 +69,7 @@ const signup = async (req, res) => {
 		res.status(500).json({ msg: err.message, success: false });
 	}
 };
+
 
 // Social Media Signup
 const socialMediaSignup = async (req, res) => {
@@ -177,7 +188,7 @@ const codeVerification = async (req, res) => {
 			).select("-password");
 			return res
 				.status(200)
-				.json({ msg: "Signup code verified! You can now proceed to login with your email and password", success: true, data: user });
+				.json({ msg: "Sign up code verified!", success: true, data: user });
 		} else if (code === user.code && !isSignup) {
 			user = await User.findOneAndUpdate(
 				{ _id: user_id },
@@ -186,7 +197,7 @@ const codeVerification = async (req, res) => {
 			);
 			return res
 				.status(200)
-				.json({ msg: "Reset code verified! You can now proceed to login with your new password", success: true, data: user });
+				.json({ msg: "Reset code verified!", success: true, data: user });
 		}
 		return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
 	} catch (err) {
@@ -209,7 +220,7 @@ const updateProfile = async (req, res) => {
 			).select("-password");
 			//success
 			return res.status(200).json({
-				msg: "Profile updates were successful! Your changes have been saved.",
+				msg: "Updated Successfully",
 				success: true,
 				data: user,
 			});
