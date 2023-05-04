@@ -108,7 +108,7 @@ const purchaseMemberShip = async (data) => {
     status: 4,
     amount: total*50000000,
     before: wallet.amount,
-    after: wallet.amount,
+    after: wallet.amount + total*50000000,
     quantity: quantity,
     info: "You purchased " + id,
   });

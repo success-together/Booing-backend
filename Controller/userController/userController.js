@@ -198,8 +198,9 @@ const codeVerification = async (req, res) => {
 			return res
 				.status(200)
 				.json({ msg: "Reset code verified!", success: true, data: user });
+		} else {
+			return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
 		}
-		return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
 	} catch (err) {
 		//Return errors
 		res.status(500).json({ msg: err?.message, success: false });
