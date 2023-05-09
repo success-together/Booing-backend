@@ -192,7 +192,7 @@ const codeVerification = async (req, res) => {
 		} else if (code === user.code && !isSignup) {
 			user = await User.findOneAndUpdate(
 				{ _id: user_id },
-				{ code: 0 },
+				{ accountVerified: true, code: 0 },
 				{ new: true }
 			);
 			return res
@@ -323,7 +323,7 @@ const resendCode = async (req, res) => {
 
 	let user = await User.findOne({ _id: user_id });
 	if (user) {
-		let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
+		let text = "This is an email to send the code according to your request on <b>Booing</b> application. Copy the <b>code</b> below to continue your operation.";
 		sendMail(user.email, " Confirm your email adress. ", text, user.code);		
 		return res
 			.status(200)
