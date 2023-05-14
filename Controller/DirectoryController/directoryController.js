@@ -20,9 +20,29 @@ const createDirectory = async (req, res, next) => {
     });
   }
 
-
+  //check there is a directory with same name.
+  const condition = {
+    isDirectory: true,
+    filename: name,
+    type: null
+  }
+  if (dir === 'top') {
+    condition.type = 'top';
+  } else if (isObjectId(dir)) {
+    condition.directory = dir;
+  } else {
+    condition.directory = null;
+  }
+  const exist = await Fragments.findOne(condition)
+  if (exist) {
+    return res.status(403).json({
+      success: false,
+      message: "There is already a directory with the same name.",
+    });
+  }
 
   try {
+   
     const directory = new Fragments({
       user_id,
       filename: name,

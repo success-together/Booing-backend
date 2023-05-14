@@ -70,7 +70,6 @@ const signup = async (req, res) => {
 	}
 };
 
-
 // Social Media Signup
 const socialMediaSignup = async (req, res) => {
 	try {
@@ -188,19 +187,18 @@ const codeVerification = async (req, res) => {
 			).select("-password");
 			return res
 				.status(200)
-				.json({ msg: "Sign up code verified!", success: true, data: user });
+				.json({ msg: "Signup code verified! You can now proceed to login with your email and password", success: true, data: user });
 		} else if (code === user.code && !isSignup) {
 			user = await User.findOneAndUpdate(
 				{ _id: user_id },
-				{ accountVerified: true, code: 0 },
+				{ code: 0 },
 				{ new: true }
 			);
 			return res
 				.status(200)
-				.json({ msg: "Reset code verified!", success: true, data: user });
-		} else {
-			return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
+				.json({ msg: "Reset code verified! You can now proceed to login with your new password", success: true, data: user });
 		}
+		return res.status(400).json({ msg: "The code you entered is incorrect. Please double-check the code and try again.", success: false });
 	} catch (err) {
 		//Return errors
 		res.status(500).json({ msg: err?.message, success: false });
@@ -221,7 +219,7 @@ const updateProfile = async (req, res) => {
 			).select("-password");
 			//success
 			return res.status(200).json({
-				msg: "Updated Successfully",
+				msg: "Profile updates were successful! Your changes have been saved.",
 				success: true,
 				data: user,
 			});
@@ -323,7 +321,7 @@ const resendCode = async (req, res) => {
 
 	let user = await User.findOne({ _id: user_id });
 	if (user) {
-		let text = "This is an email to send the code according to your request on <b>Booing</b> application. Copy the <b>code</b> below to continue your operation.";
+		let text = "This is an email to confirm your account created on <b>Booing</b> application. Copy the <b>code</b> below to continue your signup operation.";
 		sendMail(user.email, " Confirm your email adress. ", text, user.code);		
 		return res
 			.status(200)

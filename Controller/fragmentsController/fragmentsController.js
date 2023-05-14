@@ -326,6 +326,37 @@ const deleteFiles = async (req, res) => {
   }
 };
 
+const getChildrenByDirectory = async (directory) => {
+  if (!directory) {
+    return null;
+  }
+  directory.isDeleted = true;
+  directory.expireAt = new Date();
+
+  await Promise.all([
+    directory.save(),
+    Fragments.updateMany(
+      {
+        directory: directory._id,
+        isDirectory: false,
+        isDeleted: false,
+      },
+      {
+        isDeleted: true,
+        expireAt: new Date(),
+      }
+    ),
+    Fragments.find({
+      directory: directory._id,
+      isDirectory: true,
+      isDeleted: false,
+    }).then(
+      async (dirs) =>
+        await Promise.all(dirs.map((dir) => deleteFolderRecursivly(dir)))
+    ),
+  ]);
+};
+
 const deleteFilesPermanently = async (req, res) => {
   try {
     const { files_ids, user_id } = req.body;
@@ -343,9 +374,21 @@ const deleteFilesPermanently = async (req, res) => {
         message: "invalid files ids",
       });
     }
+    let directoryArr = [];
+    let filesArr = files_ids;
+    const items = await Fragments.find({ _id: { $in: files_ids }, user_id: ObjectId() }) //.populate('updates');
 
-    const files = await Fragments.find({ _id: { $in: files_ids } }).populate('updates');
-
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].isDirectory) {
+        const {fileIds, dirIds} =  await getChildrenByDirectory(items[i]);
+        directoryArr = directoryArr.concat(dirIds);
+        filesArr = filesArr.concat(fileIds);
+      }
+    }
+    const files = await Fragments.find({ _id: { $in: filesArr } }).populate('updates');
+    await Fragments.deleteMany({ _id: { $in: directoryArr }}).then(success=>{
+      console.log('successfully deleted directorys')
+    })
     if (files.some((file) => file.user_id.toString() !== user_id)) {
       return res.status(401).json({
         status: "fail",
